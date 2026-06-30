@@ -91,7 +91,7 @@ class MainActivity : ComponentActivity() {
             hasPermissions = allGranted
             if (!allGranted) {
                 val shouldShowRationale = requiredPermissions.any { permission ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION.CODES.M) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                         shouldShowRequestPermissionRationale(permission)
                     } else false
                 }
