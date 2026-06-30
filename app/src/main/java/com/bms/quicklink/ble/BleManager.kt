@@ -34,6 +34,9 @@ class BleManager(private val context: Context) {
     private val _developerMode = MutableStateFlow(false)
     val developerMode: StateFlow<Boolean> = _developerMode
 
+    private val _isSimulationMode = MutableStateFlow(false)
+    private val _verifyTimeoutMs = MutableStateFlow(2000L)
+
     private val _errorEvents = MutableSharedFlow<String>(extraBufferCapacity = 10)
     val errorEvents: SharedFlow<String> = _errorEvents
 
@@ -43,9 +46,11 @@ class BleManager(private val context: Context) {
     private var rxCharacteristic: BluetoothGattCharacteristic? = null
     private var txCharacteristic: BluetoothGattCharacteristic? = null
 
-    val commandEngine = CommandEngine { payload ->
-        writeRxCharacteristic(payload)
-    }
+    val commandEngine = CommandEngine(
+        isSimulationMode = { _isSimulationMode.value },
+        getTimeoutMs = { _verifyTimeoutMs.value },
+        bleWriter = { payload -> writeRxCharacteristic(payload) }
+    )
 
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
@@ -72,7 +77,6 @@ class BleManager(private val context: Context) {
                 Log.d("BleManager", "Connected to GATT server. Requesting MTU 247...")
                 _fsmState.value = BleFsmState.Connecting(device)
                 
-                // Delay slightly before requesting MTU for stability
                 Handler(Looper.getMainLooper()).postDelayed({
                     val mtuRequested = gatt.requestMtu(247)
                     if (!mtuRequested) {
@@ -187,8 +191,19 @@ class BleManager(private val context: Context) {
 
     fun setDeveloperMode(enabled: Boolean) {
         _developerMode.value = enabled
-        // Clear scanned devices when toggling to refresh list cleanly
         _scannedDevices.value = emptyList()
+    }
+
+    fun setSimulationMode(enabled: Boolean) {
+        _isSimulationMode.value = enabled
+        _scannedDevices.value = emptyList()
+        if (_fsmState.value !is BleFsmState.Disconnected) {
+            disconnect()
+        }
+    }
+
+    fun setVerifyTimeoutMs(timeoutMs: Long) {
+        _verifyTimeoutMs.value = timeoutMs
     }
 
     fun isBluetoothEnabled(): Boolean {
@@ -196,14 +211,37 @@ class BleManager(private val context: Context) {
     }
 
     fun startScan() {
-        val scanner = bluetoothAdapter?.bluetoothLeScanner
-        if (scanner == null || !isBluetoothEnabled()) {
-            _errorEvents.tryEmit("Bluetooth is disabled")
+        _scannedDevices.value = emptyList()
+        _fsmState.value = BleFsmState.Scanning
+
+        if (_isSimulationMode.value) {
+            // Inject virtual simulated BMS devices instantly
+            Handler(Looper.getMainLooper()).postDelayed({
+                val virtualBms1 = BmsDevice(
+                    device = null,
+                    name = "Virtual LiFePO4 BMS",
+                    address = "00:11:22:AA:BB:CC",
+                    rssi = -52,
+                    timestamp = System.currentTimeMillis()
+                )
+                val virtualBms2 = BmsDevice(
+                    device = null,
+                    name = "Virtual Smart Pack",
+                    address = "00:11:22:DD:EE:FF",
+                    rssi = -68,
+                    timestamp = System.currentTimeMillis()
+                )
+                _scannedDevices.value = listOf(virtualBms1, virtualBms2)
+            }, 600)
             return
         }
 
-        _scannedDevices.value = emptyList()
-        _fsmState.value = BleFsmState.Scanning
+        val scanner = bluetoothAdapter?.bluetoothLeScanner
+        if (scanner == null || !isBluetoothEnabled()) {
+            _fsmState.value = BleFsmState.Disconnected
+            _errorEvents.tryEmit("Bluetooth is disabled or unsupported")
+            return
+        }
 
         val scanSettings = ScanSettings.Builder()
             .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
@@ -219,11 +257,13 @@ class BleManager(private val context: Context) {
     }
 
     fun stopScan() {
-        val scanner = bluetoothAdapter?.bluetoothLeScanner
-        try {
-            scanner?.stopScan(scanCallback)
-        } catch (e: Exception) {
-            Log.e("BleManager", "Stop scan failed: ${e.message}")
+        if (!_isSimulationMode.value) {
+            val scanner = bluetoothAdapter?.bluetoothLeScanner
+            try {
+                scanner?.stopScan(scanCallback)
+            } catch (e: Exception) {
+                Log.e("BleManager", "Stop scan failed: ${e.message}")
+            }
         }
         if (_fsmState.value == BleFsmState.Scanning) {
             _fsmState.value = BleFsmState.Disconnected
@@ -237,7 +277,48 @@ class BleManager(private val context: Context) {
 
         activeDevice = device
         _fsmState.value = BleFsmState.Connecting(device)
+
+        if (_isSimulationMode.value || device.device == null) {
+            // Simulate GATT connection lifecycle
+            Handler(Looper.getMainLooper()).postDelayed({
+                onConnectedReady()
+            }, 800)
+            return
+        }
+
         currentGatt = device.device.connectGatt(context, false, gattCallback, BluetoothDevice.TRANSPORT_LE)
+    }
+
+    fun connectToMacAddress(address: String) {
+        if (_fsmState.value == BleFsmState.Scanning) {
+            stopScan()
+        }
+
+        if (_isSimulationMode.value || bluetoothAdapter == null) {
+            val directDevice = BmsDevice(
+                device = null,
+                name = "Direct Virtual BMS",
+                address = address,
+                rssi = -55,
+                timestamp = System.currentTimeMillis()
+            )
+            connect(directDevice)
+            return
+        }
+
+        try {
+            val remoteDev = bluetoothAdapter.getRemoteDevice(address)
+            val directDevice = BmsDevice(
+                device = remoteDev,
+                name = "Direct Quick Link",
+                address = address,
+                rssi = -65,
+                timestamp = System.currentTimeMillis()
+            )
+            connect(directDevice)
+        } catch (e: Exception) {
+            _errorEvents.tryEmit("Invalid Bluetooth MAC Address format")
+        }
     }
 
     fun disconnect() {
@@ -257,7 +338,6 @@ class BleManager(private val context: Context) {
         currentGatt = null
         rxCharacteristic = null
         txCharacteristic = null
-        val dev = activeDevice
         _fsmState.value = BleFsmState.Disconnected
         _errorEvents.tryEmit("Unexpected disconnect")
     }
@@ -270,6 +350,8 @@ class BleManager(private val context: Context) {
     }
 
     private fun writeRxCharacteristic(data: ByteArray): Boolean {
+        if (_isSimulationMode.value) return true // Simulated hardware write success
+
         val gatt = currentGatt ?: return false
         val char = rxCharacteristic ?: return false
 

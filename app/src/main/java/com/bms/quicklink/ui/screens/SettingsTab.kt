@@ -10,8 +10,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DeveloperMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,6 +37,8 @@ fun SettingsTab(
     val accentColor by viewModel.accentColor.collectAsState()
     val cardStyle by viewModel.cardStyle.collectAsState()
     val developerMode by viewModel.developerMode.collectAsState()
+    val verifyTimeoutMs by viewModel.verifyTimeoutMs.collectAsState()
+    val isSimulationMode by viewModel.isSimulationMode.collectAsState()
     val auditLogs by viewModel.auditLogs.collectAsState()
 
     Column(
@@ -43,7 +48,7 @@ fun SettingsTab(
         verticalArrangement = Arrangement.spacedBy(28.dp)
     ) {
         Text(
-            text = "Settings & Customization",
+            text = "Settings & Configuration",
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -156,6 +161,48 @@ fun SettingsTab(
                     }
                 }
             }
+        }
+
+        Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 4.dp))
+
+        // Hardware Configuration Section
+        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+            Text(
+                text = "Hardware Configuration",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            // Verification Timeout Selector Pill Bar
+            CustomizationGroup(title = "BLE Notify Verification Timeout") {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        .padding(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val timeouts = listOf(1000L to "1.0s", 2000L to "2.0s", 3000L to "3.0s", 5000L to "5.0s")
+                    timeouts.forEach { (timeoutKey, timeoutLabel) ->
+                        val isSelected = verifyTimeoutMs == timeoutKey
+                        val bgColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
+                        val textColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant)
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(bgColor)
+                                .clickable { viewModel.onVerifyTimeoutSelected(timeoutKey) }
+                                .padding(vertical = 12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = timeoutLabel, style = MaterialTheme.typography.labelLarge, color = textColor)
+                        }
+                    }
+                }
+            }
 
             // Developer Mode Card
             Card(
@@ -206,6 +253,56 @@ fun SettingsTab(
                     )
                 }
             }
+
+            // Simulation Mode Card
+            Card(
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(24.dp))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(MaterialTheme.colorScheme.tertiaryContainer),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.BugReport,
+                            contentDescription = "Simulation Mode",
+                            tint = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Simulation Mode",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = if (isSimulationMode) "Offline demo environment active" else "Connects to physical BLE hardware",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Switch(
+                        checked = isSimulationMode,
+                        onCheckedChange = viewModel::onSimulationModeToggled
+                    )
+                }
+            }
         }
 
         Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 4.dp))
@@ -213,7 +310,7 @@ fun SettingsTab(
         // Audit Logs Section
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -237,7 +334,7 @@ fun SettingsTab(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(180.dp)
-                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(24.dp))
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(28.dp))
                         .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -283,11 +380,11 @@ private fun AuditLogItem(log: AuditLogEntity) {
     val isSuccess = log.status == "SUCCESS"
 
     Card(
-        shape = RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(20.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(24.dp))
     ) {
         Row(
             modifier = Modifier
@@ -302,7 +399,7 @@ private fun AuditLogItem(log: AuditLogEntity) {
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(3.dp))
                 Text(
                     text = "BMS: ${log.deviceAddress}",
                     style = MaterialTheme.typography.bodyMedium,

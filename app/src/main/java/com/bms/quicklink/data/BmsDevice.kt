@@ -3,7 +3,7 @@ package com.bms.quicklink.data
 import android.bluetooth.BluetoothDevice
 
 data class BmsDevice(
-    val device: BluetoothDevice,
+    val device: BluetoothDevice?,
     val name: String,
     val address: String,
     val rssi: Int,

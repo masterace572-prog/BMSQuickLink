@@ -18,7 +18,11 @@ data class CommandTask(
     val onFailure: (String) -> Unit
 )
 
-class CommandEngine(private val bleWriter: (ByteArray) -> Boolean) {
+class CommandEngine(
+    private val isSimulationMode: () -> Boolean,
+    private val getTimeoutMs: () -> Long,
+    private val bleWriter: (ByteArray) -> Boolean
+) {
 
     private val scope = CoroutineScope(Dispatchers.Default + SupervisorJob())
     private val queue = Channel<CommandTask>(Channel.UNLIMITED)
@@ -60,20 +64,25 @@ class CommandEngine(private val bleWriter: (ByteArray) -> Boolean) {
     private suspend fun executeTaskWithRetry(task: CommandTask) {
         val maxAttempts = 2 // 1 initial attempt + 1 retry
         var success = false
+        val timeoutMs = getTimeoutMs()
 
         for (attempt in 1..maxAttempts) {
-            Log.d("CommandEngine", "Executing command for ${task.switchType}, attempt $attempt")
+            Log.d("CommandEngine", "Executing command for ${task.switchType}, attempt $attempt (Timeout: $timeoutMs ms)")
             
-            // Write to BLE
-            val writeSuccess = bleWriter(task.payload)
-            if (!writeSuccess) {
-                Log.w("CommandEngine", "BLE Write returned false on attempt $attempt")
-                delay(200)
-                continue
+            if (isSimulationMode()) {
+                delay(250) // Simulated hardware write latency (<300ms target)
+                onNotifyReceived(task.payload) // Emit simulated hardware verify response
+            } else {
+                val writeSuccess = bleWriter(task.payload)
+                if (!writeSuccess) {
+                    Log.w("CommandEngine", "BLE Write returned false on attempt $attempt")
+                    delay(200)
+                    continue
+                }
             }
 
-            // Await Notify with 2 second timeout
-            val notification = withTimeoutOrNull(2000L) {
+            // Await Notify with user-customized timeout
+            val notification = withTimeoutOrNull(timeoutMs) {
                 notifyFlow.firstOrNull { incoming -> task.verifyPredicate(incoming) }
             }
 

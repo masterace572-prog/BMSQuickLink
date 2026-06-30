@@ -1,22 +1,29 @@
 package com.bms.quicklink.ui.screens
 
 import androidx.compose.animation.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.ble.BleFsmState
 import com.bms.quicklink.ui.BmsViewModel
 import com.bms.quicklink.ui.components.ConnectionHeader
 import com.bms.quicklink.ui.components.ControlPanel
 import com.bms.quicklink.ui.components.DeviceListCard
+import com.bms.quicklink.ui.theme.LocalCardStyle
 
 @Composable
 fun ControlsTab(
@@ -28,6 +35,10 @@ fun ControlsTab(
     val fsmState by viewModel.fsmState.collectAsState()
     val scannedDevices by viewModel.scannedDevices.collectAsState()
     val switchState by viewModel.switchState.collectAsState()
+    val isSimulationMode by viewModel.isSimulationMode.collectAsState()
+
+    var customMacAddress by remember { mutableStateOf("") }
+    val cardStyle = LocalCardStyle.current
 
     Column(
         modifier = modifier
@@ -36,12 +47,33 @@ fun ControlsTab(
             .padding(horizontal = 24.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
-        // App Title
-        Text(
-            text = "BMS Link Console",
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onBackground
-        )
+        // App Title & Simulation Mode Badge
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "BMS Link Console",
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+            if (isSimulationMode) {
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.tertiaryContainer)
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = "DEMO MODE",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                }
+            }
+        }
 
         // Connection Header Card
         ConnectionHeader(fsmState = fsmState)
@@ -56,7 +88,7 @@ fun ControlsTab(
                 is BleFsmState.Disconnected -> {
                     Button(
                         onClick = {
-                            if (hasPermissions) {
+                            if (hasPermissions || isSimulationMode) {
                                 viewModel.onScanTapped()
                             } else {
                                 onRequestPermissions()
@@ -68,7 +100,7 @@ fun ControlsTab(
                     ) {
                         Icon(imageVector = Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(22.dp))
                         Spacer(modifier = Modifier.width(12.dp))
-                        Text(text = "Start Scan", style = MaterialTheme.typography.titleMedium)
+                        Text(text = if (isSimulationMode) "Scan Virtual BMS" else "Start Scan", style = MaterialTheme.typography.titleMedium)
                     }
                 }
                 is BleFsmState.Scanning -> {
@@ -117,6 +149,67 @@ fun ControlsTab(
             }
         }
 
+        // Quick Link Direct Launch Card (Only visible when disconnected)
+        AnimatedVisibility(
+            visible = fsmState is BleFsmState.Disconnected && scannedDevices.isEmpty(),
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            val directBg = when (cardStyle) {
+                "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f)
+                "OUTLINED" -> Color.Transparent
+                else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+            }
+            val directBorder = if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline
+
+            Card(
+                shape = RoundedCornerShape(28.dp),
+                colors = CardDefaults.cardColors(containerColor = directBg),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, directBorder, RoundedCornerShape(28.dp))
+            ) {
+                Column(modifier = Modifier.padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Text(
+                        text = "Quick Link Direct Launch",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Enter a known Bluetooth MAC address to instantly establish a direct GATT connection without scanning.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    OutlinedTextField(
+                        value = customMacAddress,
+                        onValueChange = { customMacAddress = it },
+                        label = { Text("Bluetooth MAC Address") },
+                        placeholder = { Text("00:11:22:33:44:55") },
+                        singleLine = true,
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Button(
+                        onClick = {
+                            if (hasPermissions || isSimulationMode) {
+                                viewModel.onConnectToMacAddressTapped(customMacAddress)
+                            } else {
+                                onRequestPermissions()
+                            }
+                        },
+                        enabled = customMacAddress.isNotBlank(),
+                        shape = MaterialTheme.shapes.large,
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
+                    ) {
+                        Text(text = "Direct Connect", style = MaterialTheme.typography.titleMedium)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(20.dp))
+                    }
+                }
+            }
+        }
+
         // Scanned Devices List (Hidden when connected)
         AnimatedVisibility(
             visible = fsmState is BleFsmState.Scanning || (fsmState is BleFsmState.Disconnected && scannedDevices.isNotEmpty()),
@@ -126,9 +219,8 @@ fun ControlsTab(
             DeviceListCard(
                 devices = scannedDevices,
                 onConnectTapped = { device ->
-                    if (hasPermissions) {
+                    if (hasPermissions || isSimulationMode) {
                         viewModel.onConnectTapped(device)
-                        // Automatically save profile on connect attempt
                         viewModel.addSavedDevice(device.name, device.address)
                     } else {
                         onRequestPermissions()

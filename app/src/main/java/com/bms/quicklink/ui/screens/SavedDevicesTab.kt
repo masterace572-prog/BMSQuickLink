@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,7 +35,10 @@ fun SavedDevicesTab(
 ) {
     val savedDevices by viewModel.savedDevices.collectAsState()
     val scannedDevices by viewModel.scannedDevices.collectAsState()
+    val isSimulationMode by viewModel.isSimulationMode.collectAsState()
+
     var showAddDialog by remember { mutableStateOf(false) }
+    var editDeviceEntity by remember { mutableStateOf<SavedDeviceEntity?>(null) }
 
     Column(
         modifier = modifier
@@ -115,18 +119,18 @@ fun SavedDevicesTab(
                     SavedDeviceCard(
                         entity = entity,
                         onConnect = {
-                            if (hasPermissions) {
+                            if (hasPermissions || isSimulationMode) {
                                 val matchedDevice = scannedDevices.find { it.address == entity.address }
                                 if (matchedDevice != null) {
                                     viewModel.onConnectTapped(matchedDevice)
                                 } else {
-                                    // Start scan if not already found in active list
-                                    viewModel.onScanTapped()
+                                    viewModel.onConnectToMacAddressTapped(entity.address)
                                 }
                             } else {
                                 onRequestPermissions()
                             }
                         },
+                        onEdit = { editDeviceEntity = entity },
                         onDelete = { viewModel.deleteSavedDevice(entity.address) }
                     )
                 }
@@ -147,12 +151,25 @@ fun SavedDevicesTab(
             }
         )
     }
+
+    editDeviceEntity?.let { entity ->
+        EditDeviceDialog(
+            currentNickname = entity.nickname,
+            address = entity.address,
+            onDismiss = { editDeviceEntity = null },
+            onSave = { newNickname ->
+                viewModel.updateSavedDeviceNickname(entity.address, newNickname)
+                editDeviceEntity = null
+            }
+        )
+    }
 }
 
 @Composable
 private fun SavedDeviceCard(
     entity: SavedDeviceEntity,
     onConnect: () -> Unit,
+    onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
     val cardStyle = LocalCardStyle.current
@@ -199,13 +216,19 @@ private fun SavedDeviceCard(
             }
             Spacer(modifier = Modifier.width(20.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = entity.nickname,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = entity.nickname,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    IconButton(onClick = onEdit, modifier = Modifier.size(24.dp)) {
+                        Icon(imageVector = Icons.Default.Edit, contentDescription = "Edit Nickname", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(16.dp))
+                    }
+                }
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(
                     text = entity.address,
@@ -286,6 +309,55 @@ private fun AddDeviceDialog(
                 contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
             ) {
                 Text("Save Profile", style = MaterialTheme.typography.titleMedium)
+            }
+        },
+        dismissButton = {
+            OutlinedButton(
+                onClick = onDismiss,
+                shape = MaterialTheme.shapes.large,
+                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
+            ) {
+                Text("Cancel", style = MaterialTheme.typography.titleMedium)
+            }
+        }
+    )
+}
+
+@Composable
+private fun EditDeviceDialog(
+    currentNickname: String,
+    address: String,
+    onDismiss: () -> Unit,
+    onSave: (String) -> Unit
+) {
+    var nickname by remember { mutableStateOf(currentNickname) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(32.dp),
+        containerColor = MaterialTheme.colorScheme.surface,
+        title = { Text(text = "Edit Profile Nickname", style = MaterialTheme.typography.headlineMedium) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(20.dp), modifier = Modifier.padding(top = 16.dp)) {
+                Text(text = "BMS MAC: $address", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                OutlinedTextField(
+                    value = nickname,
+                    onValueChange = { nickname = it },
+                    label = { Text("Device Nickname") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onSave(nickname) },
+                enabled = nickname.isNotBlank(),
+                shape = MaterialTheme.shapes.large,
+                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
+            ) {
+                Text("Update", style = MaterialTheme.typography.titleMedium)
             }
         },
         dismissButton = {

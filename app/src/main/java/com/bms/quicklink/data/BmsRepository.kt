@@ -24,10 +24,12 @@ class BmsRepository(
     val scannedDevices: StateFlow<List<BmsDevice>> = bleManager.scannedDevices
     val developerMode: StateFlow<Boolean> = prefsManager.isDeveloperMode
 
-    // Appearance Flows
+    // Appearance & Hardware Configuration Flows
     val themeMode: StateFlow<String> = prefsManager.themeMode
     val accentColor: StateFlow<String> = prefsManager.accentColor
     val cardStyle: StateFlow<String> = prefsManager.cardStyle
+    val verifyTimeoutMs: StateFlow<Long> = prefsManager.verifyTimeoutMs
+    val isSimulationMode: StateFlow<Boolean> = prefsManager.isSimulationMode
 
     val savedDevices: StateFlow<List<SavedDeviceEntity>> = dbHelper.savedDevicesFlow
     val auditLogs: StateFlow<List<AuditLogEntity>> = dbHelper.auditLogsFlow
@@ -44,9 +46,13 @@ class BmsRepository(
 
     init {
         repositoryScope.launch {
-            developerMode.collect { enabled ->
-                bleManager.setDeveloperMode(enabled)
-            }
+            developerMode.collect { enabled -> bleManager.setDeveloperMode(enabled) }
+        }
+        repositoryScope.launch {
+            isSimulationMode.collect { enabled -> bleManager.setSimulationMode(enabled) }
+        }
+        repositoryScope.launch {
+            verifyTimeoutMs.collect { timeout -> bleManager.setVerifyTimeoutMs(timeout) }
         }
 
         repositoryScope.launch {
@@ -68,14 +74,18 @@ class BmsRepository(
     fun startScan() = bleManager.startScan()
     fun stopScan() = bleManager.stopScan()
     fun connect(device: BmsDevice) = bleManager.connect(device)
+    fun connectToMacAddress(address: String) = bleManager.connectToMacAddress(address)
     fun disconnect() = bleManager.disconnect()
 
     fun setDeveloperMode(enabled: Boolean) = prefsManager.setDeveloperMode(enabled)
     fun setThemeMode(mode: String) = prefsManager.setThemeMode(mode)
     fun setAccentColor(color: String) = prefsManager.setAccentColor(color)
     fun setCardStyle(style: String) = prefsManager.setCardStyle(style)
+    fun setVerifyTimeoutMs(timeoutMs: Long) = prefsManager.setVerifyTimeoutMs(timeoutMs)
+    fun setSimulationMode(enabled: Boolean) = prefsManager.setSimulationMode(enabled)
 
     fun addSavedDevice(nickname: String, address: String) = dbHelper.addSavedDevice(nickname, address)
+    fun updateSavedDeviceNickname(address: String, newNickname: String) = dbHelper.updateSavedDeviceNickname(address, newNickname)
     fun deleteSavedDevice(address: String) = dbHelper.deleteSavedDevice(address)
     fun clearAuditLogs() = dbHelper.clearAuditLogs()
 

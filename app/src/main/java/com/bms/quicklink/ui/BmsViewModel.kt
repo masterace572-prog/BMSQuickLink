@@ -29,6 +29,7 @@ class BmsViewModel(private val repository: BmsRepository) : ViewModel() {
     fun onScanTapped() = repository.startScan()
     fun onStopScanTapped() = repository.stopScan()
     fun onConnectTapped(device: BmsDevice) = repository.connect(device)
+    fun onConnectToMacAddressTapped(address: String) = repository.connectToMacAddress(address)
     fun onDisconnectTapped() = repository.disconnect()
 
     fun onSwitchToggled(switchType: SwitchType, targetState: Boolean) {
@@ -51,6 +52,7 @@ class BmsViewModel(private val repository: BmsRepository) : ViewModel() {
     val auditLogs: StateFlow<List<AuditLogEntity>> = repository.auditLogs
 
     fun addSavedDevice(nickname: String, address: String) = repository.addSavedDevice(nickname, address)
+    fun updateSavedDeviceNickname(address: String, newNickname: String) = repository.updateSavedDeviceNickname(address, newNickname)
     fun deleteSavedDevice(address: String) = repository.deleteSavedDevice(address)
     fun clearAuditLogs() = repository.clearAuditLogs()
 
@@ -59,9 +61,13 @@ class BmsViewModel(private val repository: BmsRepository) : ViewModel() {
     val themeMode: StateFlow<String> = repository.themeMode
     val accentColor: StateFlow<String> = repository.accentColor
     val cardStyle: StateFlow<String> = repository.cardStyle
+    val verifyTimeoutMs: StateFlow<Long> = repository.verifyTimeoutMs
+    val isSimulationMode: StateFlow<Boolean> = repository.isSimulationMode
 
     fun onDeveloperModeToggled(enabled: Boolean) = repository.setDeveloperMode(enabled)
     fun onThemeModeSelected(mode: String) = repository.setThemeMode(mode)
     fun onAccentColorSelected(color: String) = repository.setAccentColor(color)
     fun onCardStyleSelected(style: String) = repository.setCardStyle(style)
+    fun onVerifyTimeoutSelected(timeoutMs: Long) = repository.setVerifyTimeoutMs(timeoutMs)
+    fun onSimulationModeToggled(enabled: Boolean) = repository.setSimulationMode(enabled)
 }

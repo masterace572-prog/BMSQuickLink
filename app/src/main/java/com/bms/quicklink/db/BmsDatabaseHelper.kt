@@ -83,28 +83,6 @@ class BmsDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
         onCreate(db)
     }
 
-    // --- AUTH CRUD ---
-    suspend fun getPinHash(): String? = withContext(Dispatchers.IO) {
-        val db = readableDatabase
-        val cursor = db.query(TABLE_AUTH, arrayOf(COL_AUTH_PIN_HASH), null, null, null, null, "$COL_AUTH_ID DESC", "1")
-        var hash: String? = null
-        if (cursor.moveToFirst()) {
-            hash = cursor.getString(0)
-        }
-        cursor.close()
-        hash
-    }
-
-    suspend fun savePinHash(pinHash: String): Boolean = withContext(Dispatchers.IO) {
-        val db = writableDatabase
-        db.delete(TABLE_AUTH, null, null)
-        val values = ContentValues().apply {
-            put(COL_AUTH_PIN_HASH, pinHash)
-        }
-        val id = db.insert(TABLE_AUTH, null, values)
-        id != -1L
-    }
-
     // --- SAVED DEVICES CRUD ---
     fun addSavedDevice(nickname: String, address: String) {
         dbScope.launch(Dispatchers.IO) {
@@ -115,6 +93,17 @@ class BmsDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
                 put(COL_DEV_DATE, System.currentTimeMillis())
             }
             db.insertWithOnConflict(TABLE_SAVED_DEVICES, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+            refreshSavedDevices()
+        }
+    }
+
+    fun updateSavedDeviceNickname(address: String, newNickname: String) {
+        dbScope.launch(Dispatchers.IO) {
+            val db = writableDatabase
+            val values = ContentValues().apply {
+                put(COL_DEV_NICKNAME, newNickname)
+            }
+            db.update(TABLE_SAVED_DEVICES, values, "$COL_DEV_ADDRESS = ?", arrayOf(address))
             refreshSavedDevices()
         }
     }
