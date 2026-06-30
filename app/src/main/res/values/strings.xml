@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BMS Quick Link &amp; Control</string>
+    <string name="scan">Scan</string>
+    <string name="stop_scan">Stop Scan</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="status_disconnected">Disconnected</string>
+    <string name="status_scanning">Scanning</string>
+    <string name="status_connecting">Connecting</string>
+    <string name="status_connected">Connected</string>
+</resources>
