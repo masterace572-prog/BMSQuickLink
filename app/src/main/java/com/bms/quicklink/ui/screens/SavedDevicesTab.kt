@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.db.SavedDeviceEntity
 import com.bms.quicklink.ui.BmsViewModel
@@ -37,7 +38,7 @@ fun SavedDevicesTab(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(horizontal = 24.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         Row(
@@ -48,8 +49,12 @@ fun SavedDevicesTab(
             Text(
                 text = "Saved Profiles",
                 style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onBackground
+                color = MaterialTheme.colorScheme.onBackground,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
             )
+            Spacer(modifier = Modifier.width(16.dp))
             Button(
                 onClick = { showAddDialog = true },
                 shape = MaterialTheme.shapes.large,
@@ -57,7 +62,7 @@ fun SavedDevicesTab(
             ) {
                 Icon(imageVector = Icons.Default.Add, contentDescription = "Add Device", modifier = Modifier.size(20.dp))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Add Profile", style = MaterialTheme.typography.labelLarge)
+                Text(text = "Add Profile", style = MaterialTheme.typography.titleMedium)
             }
         }
 
@@ -96,7 +101,7 @@ fun SavedDevicesTab(
                         shape = MaterialTheme.shapes.medium,
                         contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
                     ) {
-                        Text(text = "Create Profile", style = MaterialTheme.typography.labelLarge)
+                        Text(text = "Create Profile", style = MaterialTheme.typography.titleMedium)
                     }
                 }
             }
@@ -123,6 +128,10 @@ fun SavedDevicesTab(
                         },
                         onDelete = { viewModel.deleteSavedDevice(entity.address) }
                     )
+                }
+                
+                item {
+                    Spacer(modifier = Modifier.height(110.dp))
                 }
             }
         }
@@ -180,13 +189,17 @@ private fun SavedDeviceCard(
                 Text(
                     text = entity.nickname,
                     style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(
                     text = entity.address,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Text(
@@ -201,7 +214,7 @@ private fun SavedDeviceCard(
                 shape = MaterialTheme.shapes.large,
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
             ) {
-                Text(text = "Connect", style = MaterialTheme.typography.labelLarge)
+                Text(text = "Connect", style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.width(6.dp))
                 Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp))
             }
@@ -259,7 +272,7 @@ private fun AddDeviceDialog(
                 shape = MaterialTheme.shapes.large,
                 contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
             ) {
-                Text("Save Profile", style = MaterialTheme.typography.labelLarge)
+                Text("Save Profile", style = MaterialTheme.typography.titleMedium)
             }
         },
         dismissButton = {
@@ -268,7 +281,7 @@ private fun AddDeviceDialog(
                 shape = MaterialTheme.shapes.large,
                 contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
             ) {
-                Text("Cancel", style = MaterialTheme.typography.labelLarge)
+                Text("Cancel", style = MaterialTheme.typography.titleMedium)
             }
         }
     )

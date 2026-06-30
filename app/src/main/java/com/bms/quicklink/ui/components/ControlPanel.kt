@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.data.SwitchState
 import com.bms.quicklink.data.SwitchType
@@ -156,7 +157,9 @@ private fun ControlCard(
                         Text(
                             text = title,
                             style = MaterialTheme.typography.titleLarge,
-                            color = titleColor
+                            color = titleColor,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                         if (isEnabled && !isPending) {
                             Box(
@@ -177,7 +180,9 @@ private fun ControlCard(
                     Text(
                         text = subtitle,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = subtitleColor
+                        color = subtitleColor,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
                 Spacer(modifier = Modifier.width(16.dp))

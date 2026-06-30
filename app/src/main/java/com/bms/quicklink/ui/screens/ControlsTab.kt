@@ -33,20 +33,25 @@ fun ControlsTab(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(28.dp)
+            .padding(horizontal = 24.dp, vertical = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
+        // App Title
+        Text(
+            text = "BMS Link Console",
+            style = MaterialTheme.typography.headlineLarge,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+
+        // Connection Header Card
+        ConnectionHeader(fsmState = fsmState)
+
+        // Primary Action Button Bar (Placed below header to prevent text wrapping/crowding)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.End,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "BMS Link Console",
-                style = MaterialTheme.typography.headlineLarge,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            
             when (fsmState) {
                 is BleFsmState.Disconnected -> {
                     Button(
@@ -58,58 +63,59 @@ fun ControlsTab(
                             }
                         },
                         shape = MaterialTheme.shapes.large,
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
                     ) {
-                        Icon(imageVector = Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Start Scan", style = MaterialTheme.typography.labelLarge)
+                        Icon(imageVector = Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(22.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(text = "Start Scan", style = MaterialTheme.typography.titleMedium)
                     }
                 }
                 is BleFsmState.Scanning -> {
                     Button(
                         onClick = { viewModel.onStopScanTapped() },
                         shape = MaterialTheme.shapes.large,
+                        modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
                     ) {
-                        Icon(imageVector = Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Stop Scan", style = MaterialTheme.typography.labelLarge)
+                        Icon(imageVector = Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(22.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(text = "Stop Scan", style = MaterialTheme.typography.titleMedium)
                     }
                 }
                 is BleFsmState.Connecting -> {
                     Button(
                         onClick = { viewModel.onDisconnectTapped() },
                         shape = MaterialTheme.shapes.large,
+                        modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
                     ) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(18.dp),
-                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.5.dp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Cancel", style = MaterialTheme.typography.labelLarge)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(text = "Cancel Connection", style = MaterialTheme.typography.titleMedium)
                     }
                 }
                 is BleFsmState.Connected -> {
                     Button(
                         onClick = { viewModel.onDisconnectTapped() },
                         shape = MaterialTheme.shapes.large,
+                        modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
                     ) {
-                        Icon(imageVector = Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = "Disconnect", style = MaterialTheme.typography.labelLarge)
+                        Icon(imageVector = Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(22.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(text = "Disconnect", style = MaterialTheme.typography.titleMedium)
                     }
                 }
             }
         }
-
-        // Connection Header
-        ConnectionHeader(fsmState = fsmState)
 
         // Scanned Devices List (Hidden when connected)
         AnimatedVisibility(
@@ -139,5 +145,8 @@ fun ControlsTab(
             switchState = switchState,
             onSwitchToggled = viewModel::onSwitchToggled
         )
+
+        // Bottom spacer to ensure content is fully scrollable above the floating navigation dock
+        Spacer(modifier = Modifier.height(110.dp))
     }
 }

@@ -33,7 +33,7 @@ fun SettingsTab(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(horizontal = 24.dp, vertical = 20.dp),
         verticalArrangement = Arrangement.spacedBy(28.dp)
     ) {
         Text(
@@ -90,7 +90,7 @@ fun SettingsTab(
                 )
                 if (auditLogs.isNotEmpty()) {
                     TextButton(onClick = { viewModel.clearAuditLogs() }) {
-                        Text(text = "Clear Logs", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.error)
+                        Text(text = "Clear Logs", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.error)
                     }
                 }
             }
@@ -117,6 +117,10 @@ fun SettingsTab(
                 ) {
                     items(auditLogs, key = { it.id }) { log ->
                         AuditLogItem(log = log)
+                    }
+                    
+                    item {
+                        Spacer(modifier = Modifier.height(110.dp))
                     }
                 }
             }

@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.ble.BleFsmState
 
@@ -83,44 +84,29 @@ fun ConnectionHeader(
     ) {
         Column(
             modifier = Modifier
-                .padding(32.dp)
+                .padding(28.dp)
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            // Top Row: Icon Container & Status Badge Pill
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
-                    Box(
-                        modifier = Modifier
-                            .size(64.dp)
-                            .clip(RoundedCornerShape(22.dp))
-                            .background(badgeColor.copy(alpha = 0.15f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = icon,
-                            contentDescription = "Status Icon",
-                            tint = if (fsmState is BleFsmState.Disconnected) badgeTextColor else badgeColor,
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(20.dp))
-                    Column {
-                        Text(
-                            text = deviceName,
-                            style = MaterialTheme.typography.titleLarge,
-                            color = contentColor
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = if (fsmState is BleFsmState.Connected) fsmState.device.address else "System Overview",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = contentColor.copy(alpha = 0.6f)
-                        )
-                    }
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(badgeColor.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = "Status Icon",
+                        tint = if (fsmState is BleFsmState.Disconnected) badgeTextColor else badgeColor,
+                        modifier = Modifier.size(28.dp)
+                    )
                 }
                 
                 // Status Badge Pill
@@ -128,7 +114,7 @@ fun ConnectionHeader(
                     modifier = Modifier
                         .clip(RoundedCornerShape(20.dp))
                         .background(badgeColor)
-                        .padding(horizontal = 18.dp, vertical = 10.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     Text(
                         text = statusText,
@@ -136,6 +122,25 @@ fun ConnectionHeader(
                         color = badgeTextColor
                     )
                 }
+            }
+
+            // Bottom Row: Device Title & System Overview (Unrestricted full width)
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = deviceName,
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = contentColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = if (fsmState is BleFsmState.Connected) fsmState.device.address else "System Overview",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = contentColor.copy(alpha = 0.6f),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
 
             if (rssi != null) {
