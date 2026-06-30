@@ -25,14 +25,14 @@ fun PermissionRationaleDialog(
             Icon(imageVector = Icons.Default.Info, contentDescription = "Permission Info", tint = MaterialTheme.colorScheme.primary)
         },
         title = {
-            Text(text = "Bluetooth Permissions Required", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "Permissions Required for Finding", style = MaterialTheme.typography.headlineMedium)
         },
         text = {
             Text(
                 text = if (isPermanentDenial) {
-                    "Bluetooth Low Energy permissions were permanently denied. Please enable them in App Settings to scan for and connect to your BMS."
+                    "Bluetooth and Location permissions were permanently denied. Both are required by the Android BLE stack for finding and connecting to your BMS. Please enable them in App Settings."
                 } else {
-                    "BMS Quick Link & Control requires Bluetooth Low Energy permissions to discover and establish a stable connection with your battery management system."
+                    "BMS Quick Link & Control requires both Bluetooth and Location permissions for successfully finding, scanning, and establishing a stable connection with your battery management system."
                 },
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(top = 8.dp)
