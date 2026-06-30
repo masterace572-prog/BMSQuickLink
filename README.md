@@ -1,13 +1,13 @@
-# BMS Quick Link & Control (4.0 Elite Floating Edition)
+# BMS Quick Link & Control (5.0 Ultimate Customization Edition)
 
-**Version:** 4.0 (Elite Floating UI/UX Redesign)  
+**Version:** 5.0 (Ultimate Appearance Customization Edition)  
 **Platform:** Android  
 **Language:** Kotlin  
 **UI Framework:** Jetpack Compose (Material 3)  
-**Design System:** Elite Minimal Flat Palette (Obsidian Dark Mode / Arctic Light Mode)  
+**Design System:** Full-Featured Appearance Console (Dynamic Themes, Swatch Palette, Card Styles)  
 **Backend:** Local SQLite Database (Saved Devices & Connected-Only Audit Logs)  
 **Communication:** Bluetooth Low Energy (BLE)  
-**Architecture:** MVVM + Repository + SQLiteOpenHelper + StateFlow + Coroutines
+**Architecture:** MVVM + Repository + SharedPreferences Flows + StateFlow + Coroutines
 
 ---
 
@@ -20,14 +20,27 @@ Per the PRD, the application intentionally excludes every monitoring, telemetry,
 
 ---
 
-## Elite UI/UX Masterpiece Features (v4.0)
+## Ultimate Appearance Console Features (v5.0)
 
-### 🌟 Breathtaking Design & UI
-- **Floating Pill Navigation Dock (`MainScreen.kt`):** A spectacularly modern floating navigation bar (modeled after the latest high-end dynamic interfaces) offering custom pill indicator highlights, zero tonal distortion, and beautiful floating elevation.
+### 🎨 Fully Functional Real-Time Appearance Customization
+Accessible in the Settings screen, the new Appearance Console provides full-featured, highly intuitive customization that instantly re-themes the entire application in real-time:
+- **3-Way Theme Mode Selection:** Easily toggle between **Dark Mode (Obsidian)**, **Light Mode (Arctic)**, and **System Default**.
+- **Dynamic Accent Swatch Palette:** Instantly change the app's accent color across active switches, primary buttons, floating navigation indicators, and badge pills. Choose from an elite palette of 6 striking pairings:
+  - `Electric Blue` (`0xFF3B82F6`)
+  - `Emerald Green` (`0xFF10B981`)
+  - `Sunset Orange` (`0xFFF59E0B`)
+  - `Rose Crimson` (`0xFFF43F5E`)
+  - `Cyber Cyan` (`0xFF06B6D4`)
+  - `Royal Purple` (`0xFF8B5CF6`)
+- **3-Way Card Style Engine (`LocalCardStyle`):** Change the architectural appearance of cards across the entire application instantly:
+  - `Solid Clean (FILLED)`: High-contrast solid surface cards with zero borders.
+  - `Border Outlined (OUTLINED)`: Transparent cards defined by crisp, elegant 1dp outline borders.
+  - `Glassmorphism (GLASS)`: Premium semi-transparent translucent cards (`0.35f` alpha) with subtle border lines.
+
+### 🌟 High-End Scaffolding & Layouts
+- **Floating Pill Navigation Dock (`MainScreen.kt`):** A spectacularly modern floating navigation bar offering custom pill indicator highlights, zero tonal distortion, and beautiful floating elevation.
 - **Live RSSI Signal Meter Bars (`ConnectionHeader.kt`):** An absolute masterpiece header featuring dedicated square icon highlight containers, MAC address presentation, and an explicit live RSSI signal meter bar (representing signal strength via 4 clean vertical pill bars).
-- **Left Accent Indicator Bars (`ControlPanel.kt`):** Hardware switches now feature an elegant 6dp left accent indicator bar, explicit status tags (`ACTIVE` / `OFF`), and custom animated content expansion.
-- **Dashed Empty States (`SavedDevicesTab.kt`):** Beautifully crafted dashed border boxes for empty states with prompt action triggers to ensure a world-class user onboarding experience.
-- **Obsidian & Arctic Palettes (Zero Gradients):** High-end solid flat colors (Deep Obsidian `0xFF0A0B0E` for Dark Mode, Pristine Arctic `0xFFF8FAFC` for Light Mode) offering breathtaking contrast and professional architectural aesthetics.
+- **Left Accent Indicator Bars (`ControlPanel.kt`):** Hardware switches feature an elegant 6dp left accent indicator bar, explicit status tags (`ACTIVE` / `OFF`), and custom animated content expansion.
 
 ### 🗄️ Local Backend & Connected-Only Logging (`BmsDatabaseHelper.kt`, `BmsRepository.kt`)
 - **Connected-Only Audit Logging:** Per user specification, audit logs are strictly reserved for successfully connected devices. Toggles and active connections are recorded to the local database table (`audit_logs`) while ambient scanning or disconnect events are completely filtered out.

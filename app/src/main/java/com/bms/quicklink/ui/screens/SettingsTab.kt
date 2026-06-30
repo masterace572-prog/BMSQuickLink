@@ -1,23 +1,27 @@
 package com.bms.quicklink.ui.screens
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DeveloperMode
-import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.db.AuditLogEntity
 import com.bms.quicklink.ui.BmsViewModel
+import com.bms.quicklink.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,7 +30,9 @@ fun SettingsTab(
     viewModel: BmsViewModel,
     modifier: Modifier = Modifier
 ) {
-    val darkMode by viewModel.darkMode.collectAsState()
+    val themeMode by viewModel.themeMode.collectAsState()
+    val accentColor by viewModel.accentColor.collectAsState()
+    val cardStyle by viewModel.cardStyle.collectAsState()
     val developerMode by viewModel.developerMode.collectAsState()
     val auditLogs by viewModel.auditLogs.collectAsState()
 
@@ -37,38 +43,169 @@ fun SettingsTab(
         verticalArrangement = Arrangement.spacedBy(28.dp)
     ) {
         Text(
-            text = "Settings & Preferences",
+            text = "Settings & Customization",
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.onBackground
         )
 
-        // Preferences Section
-        Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            // Dark / Light Mode Toggle with Icon Support
-            PreferenceCard(
-                title = "Appearance",
-                subtitle = if (darkMode) "Dark Mode active" else "Light Mode active",
-                icon = if (darkMode) Icons.Default.DarkMode else Icons.Default.LightMode,
-                action = {
-                    Switch(
-                        checked = darkMode,
-                        onCheckedChange = viewModel::onDarkModeToggled
-                    )
-                }
+        // Appearance Customization Section
+        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+            Text(
+                text = "Appearance Console",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground
             )
 
-            // Developer Mode Toggle
-            PreferenceCard(
-                title = "Developer Mode",
-                subtitle = if (developerMode) "BMS scan filters bypassed" else "Scan filtered to known BMS prefixes",
-                icon = Icons.Default.DeveloperMode,
-                action = {
+            // 1. Theme Mode Toggle Pill Bar
+            CustomizationGroup(title = "Theme Mode") {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        .padding(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val modes = listOf("DARK" to "Obsidian", "LIGHT" to "Arctic", "SYSTEM" to "System")
+                    modes.forEach { (modeKey, modeLabel) ->
+                        val isSelected = themeMode == modeKey
+                        val bgColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
+                        val textColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant)
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(bgColor)
+                                .clickable { viewModel.onThemeModeSelected(modeKey) }
+                                .padding(vertical = 12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = modeLabel, style = MaterialTheme.typography.labelLarge, color = textColor)
+                        }
+                    }
+                }
+            }
+
+            // 2. Dynamic Accent Color Swatch Palette
+            CustomizationGroup(title = "Accent Palette") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    val swatches = listOf(
+                        "BLUE" to AccentBlueDark,
+                        "EMERALD" to AccentEmeraldDark,
+                        "ORANGE" to AccentOrangeDark,
+                        "ROSE" to AccentRoseDark,
+                        "CYAN" to AccentCyanDark,
+                        "PURPLE" to AccentPurpleDark
+                    )
+
+                    swatches.forEach { (colorKey, colorValue) ->
+                        val isSelected = accentColor == colorKey
+                        Box(
+                            modifier = Modifier
+                                .size(44.dp)
+                                .clip(CircleShape)
+                                .background(colorValue)
+                                .border(
+                                    width = if (isSelected) 3.dp else 0.dp,
+                                    color = if (isSelected) MaterialTheme.colorScheme.onBackground else Color.Transparent,
+                                    shape = CircleShape
+                                )
+                                .clickable { viewModel.onAccentColorSelected(colorKey) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            if (isSelected) {
+                                Icon(imageVector = Icons.Default.Check, contentDescription = "Selected", tint = Color.White, modifier = Modifier.size(20.dp))
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 3. Card Style Selector Pill Bar
+            CustomizationGroup(title = "Card Style") {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        .padding(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val styles = listOf("FILLED" to "Solid Clean", "OUTLINED" to "Outlined", "GLASS" to "Glassmorphism")
+                    styles.forEach { (styleKey, styleLabel) ->
+                        val isSelected = cardStyle == styleKey
+                        val bgColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
+                        val textColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant)
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(bgColor)
+                                .clickable { viewModel.onCardStyleSelected(styleKey) }
+                                .padding(vertical = 12.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = styleLabel, style = MaterialTheme.typography.labelLarge, color = textColor)
+                        }
+                    }
+                }
+            }
+
+            // Developer Mode Card
+            Card(
+                shape = RoundedCornerShape(24.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(24.dp))
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(52.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.DeveloperMode,
+                            contentDescription = "Developer Mode",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Developer Mode",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = if (developerMode) "BMS scan filters bypassed" else "Scan filtered to known BMS prefixes",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(12.dp))
                     Switch(
                         checked = developerMode,
                         onCheckedChange = viewModel::onDeveloperModeToggled
                     )
                 }
-            )
+            }
         }
 
         Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 4.dp))
@@ -76,7 +213,7 @@ fun SettingsTab(
         // Audit Logs Section
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -99,8 +236,8 @@ fun SettingsTab(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(200.dp)
-                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(28.dp))
+                        .height(180.dp)
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(24.dp))
                         .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -113,7 +250,7 @@ fun SettingsTab(
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     items(auditLogs, key = { it.id }) { log ->
                         AuditLogItem(log = log)
@@ -129,56 +266,13 @@ fun SettingsTab(
 }
 
 @Composable
-private fun PreferenceCard(
+private fun CustomizationGroup(
     title: String,
-    subtitle: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    action: @Composable () -> Unit
+    content: @Composable () -> Unit
 ) {
-    Card(
-        shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(28.dp))
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(24.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(56.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = title,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.size(28.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(20.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(3.dp))
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            action()
-        }
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+        Text(text = title, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        content()
     }
 }
 
@@ -189,11 +283,11 @@ private fun AuditLogItem(log: AuditLogEntity) {
     val isSuccess = log.status == "SUCCESS"
 
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(24.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(20.dp))
     ) {
         Row(
             modifier = Modifier
@@ -208,7 +302,7 @@ private fun AuditLogItem(log: AuditLogEntity) {
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(3.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = "BMS: ${log.deviceAddress}",
                     style = MaterialTheme.typography.bodyMedium,

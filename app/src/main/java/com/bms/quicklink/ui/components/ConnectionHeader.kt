@@ -18,19 +18,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.ble.BleFsmState
+import com.bms.quicklink.ui.theme.LocalCardStyle
 
 @Composable
 fun ConnectionHeader(
     fsmState: BleFsmState,
     modifier: Modifier = Modifier
 ) {
-    val (statusText, deviceName, rssi, backgroundColor, contentColor, icon, badgeColor, badgeTextColor) = when (fsmState) {
+    val cardStyle = LocalCardStyle.current
+    val (statusText, deviceName, rssi, baseBgColor, contentColor, icon, badgeColor, badgeTextColor) = when (fsmState) {
         is BleFsmState.Disconnected -> {
             HeaderData(
                 statusText = "Disconnected",
                 deviceName = "No Active BMS",
                 rssi = null,
-                backgroundColor = MaterialTheme.colorScheme.surface,
+                baseBgColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 icon = Icons.Default.Bluetooth,
                 badgeColor = MaterialTheme.colorScheme.surfaceVariant,
@@ -42,7 +44,7 @@ fun ConnectionHeader(
                 statusText = "Scanning",
                 deviceName = "Searching for BMS...",
                 rssi = null,
-                backgroundColor = MaterialTheme.colorScheme.surface,
+                baseBgColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 icon = Icons.Default.BluetoothSearching,
                 badgeColor = MaterialTheme.colorScheme.secondary,
@@ -54,7 +56,7 @@ fun ConnectionHeader(
                 statusText = "Connecting",
                 deviceName = fsmState.device.name,
                 rssi = fsmState.device.rssi,
-                backgroundColor = MaterialTheme.colorScheme.surface,
+                baseBgColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 icon = Icons.Default.Bluetooth,
                 badgeColor = MaterialTheme.colorScheme.tertiary,
@@ -66,7 +68,7 @@ fun ConnectionHeader(
                 statusText = "Connected",
                 deviceName = fsmState.device.name,
                 rssi = fsmState.device.rssi,
-                backgroundColor = MaterialTheme.colorScheme.surface,
+                baseBgColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 icon = Icons.Default.BluetoothConnected,
                 badgeColor = MaterialTheme.colorScheme.primary,
@@ -75,12 +77,23 @@ fun ConnectionHeader(
         }
     }
 
+    val cardBg = when (cardStyle) {
+        "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+        "OUTLINED" -> Color.Transparent
+        else -> baseBgColor
+    }
+
+    val cardBorder = when (cardStyle) {
+        "FILLED" -> Color.Transparent
+        else -> MaterialTheme.colorScheme.outline
+    }
+
     Card(
         shape = RoundedCornerShape(32.dp),
-        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        colors = CardDefaults.cardColors(containerColor = cardBg),
         modifier = modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(32.dp))
+            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(32.dp))
     ) {
         Column(
             modifier = Modifier
@@ -124,7 +137,7 @@ fun ConnectionHeader(
                 }
             }
 
-            // Bottom Row: Device Title & System Overview (Unrestricted full width)
+            // Bottom Row: Device Title & System Overview
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = deviceName,
@@ -191,7 +204,7 @@ private data class HeaderData(
     val statusText: String,
     val deviceName: String,
     val rssi: Int?,
-    val backgroundColor: Color,
+    val baseBgColor: Color,
     val contentColor: Color,
     val icon: androidx.compose.ui.graphics.vector.ImageVector,
     val badgeColor: Color,

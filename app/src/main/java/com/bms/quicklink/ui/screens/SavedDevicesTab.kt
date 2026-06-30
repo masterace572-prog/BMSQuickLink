@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.db.SavedDeviceEntity
 import com.bms.quicklink.ui.BmsViewModel
+import com.bms.quicklink.ui.theme.LocalCardStyle
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -154,15 +155,27 @@ private fun SavedDeviceCard(
     onConnect: () -> Unit,
     onDelete: () -> Unit
 ) {
+    val cardStyle = LocalCardStyle.current
+    val itemBg = when (cardStyle) {
+        "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+        "OUTLINED" -> Color.Transparent
+        else -> MaterialTheme.colorScheme.surface
+    }
+
+    val itemBorder = when (cardStyle) {
+        "FILLED" -> Color.Transparent
+        else -> MaterialTheme.colorScheme.outline
+    }
+
     val dateFormat = remember { SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()) }
     val dateString = remember(entity.dateAdded) { dateFormat.format(Date(entity.dateAdded)) }
 
     Card(
         shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = itemBg),
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(28.dp))
+            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, itemBorder, RoundedCornerShape(28.dp))
     ) {
         Row(
             modifier = Modifier

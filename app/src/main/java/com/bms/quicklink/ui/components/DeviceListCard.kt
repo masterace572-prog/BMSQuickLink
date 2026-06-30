@@ -15,8 +15,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.data.BmsDevice
+import com.bms.quicklink.ui.theme.LocalCardStyle
 
 @Composable
 fun DeviceListCard(
@@ -24,12 +26,24 @@ fun DeviceListCard(
     onConnectTapped: (BmsDevice) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val cardStyle = LocalCardStyle.current
+    val cardBg = when (cardStyle) {
+        "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f)
+        "OUTLINED" -> Color.Transparent
+        else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+    }
+
+    val cardBorder = when (cardStyle) {
+        "FILLED" -> Color.Transparent
+        else -> MaterialTheme.colorScheme.outline
+    }
+
     Card(
         shape = RoundedCornerShape(32.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
+        colors = CardDefaults.cardColors(containerColor = cardBg),
         modifier = modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(32.dp))
+            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(32.dp))
     ) {
         Column(modifier = Modifier.padding(32.dp)) {
             Row(
@@ -88,12 +102,24 @@ private fun DeviceItem(
     device: BmsDevice,
     onConnect: () -> Unit
 ) {
+    val cardStyle = LocalCardStyle.current
+    val itemBg = when (cardStyle) {
+        "GLASS" -> MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
+        "OUTLINED" -> Color.Transparent
+        else -> MaterialTheme.colorScheme.surface
+    }
+
+    val itemBorder = when (cardStyle) {
+        "FILLED" -> Color.Transparent
+        else -> MaterialTheme.colorScheme.outline
+    }
+
     Card(
         shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = itemBg),
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(24.dp))
+            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, itemBorder, RoundedCornerShape(24.dp))
             .clickable(onClick = onConnect)
     ) {
         Row(

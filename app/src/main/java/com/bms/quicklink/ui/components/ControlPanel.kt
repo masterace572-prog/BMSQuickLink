@@ -21,6 +21,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.data.SwitchState
 import com.bms.quicklink.data.SwitchType
+import com.bms.quicklink.ui.theme.LocalCardStyle
 
 @Composable
 fun ControlPanel(
@@ -101,12 +102,18 @@ private fun ControlCard(
     onCheckedChange: (Boolean) -> Unit,
     activeTint: Color
 ) {
-    val cardBg = MaterialTheme.colorScheme.surface
+    val cardStyle = LocalCardStyle.current
+    val cardBg = when (cardStyle) {
+        "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+        "OUTLINED" -> Color.Transparent
+        else -> MaterialTheme.colorScheme.surface
+    }
+
     val iconBg = if (isChecked && isEnabled) activeTint.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant
     val iconColor = if (isChecked && isEnabled) activeTint else MaterialTheme.colorScheme.onSurfaceVariant
     val titleColor = if (isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
     val subtitleColor = if (isEnabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-    val borderColor = if (isChecked && isEnabled) activeTint.copy(alpha = 0.4f) else MaterialTheme.colorScheme.outline
+    val borderColor = if (isChecked && isEnabled) activeTint.copy(alpha = 0.4f) else if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline
     val accentBarColor = if (isChecked && isEnabled) activeTint else Color.Transparent
 
     Card(
@@ -114,7 +121,7 @@ private fun ControlCard(
         colors = CardDefaults.cardColors(containerColor = cardBg),
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, borderColor, RoundedCornerShape(28.dp))
+            .border(if (cardStyle == "FILLED" && !isChecked) 0.dp else 1.dp, borderColor, RoundedCornerShape(28.dp))
             .animateContentSize()
     ) {
         Row(

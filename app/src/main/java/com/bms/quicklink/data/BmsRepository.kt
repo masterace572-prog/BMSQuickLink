@@ -23,7 +23,11 @@ class BmsRepository(
     val fsmState: StateFlow<BleFsmState> = bleManager.fsmState
     val scannedDevices: StateFlow<List<BmsDevice>> = bleManager.scannedDevices
     val developerMode: StateFlow<Boolean> = prefsManager.isDeveloperMode
-    val darkMode: StateFlow<Boolean> = prefsManager.isDarkMode
+
+    // Appearance Flows
+    val themeMode: StateFlow<String> = prefsManager.themeMode
+    val accentColor: StateFlow<String> = prefsManager.accentColor
+    val cardStyle: StateFlow<String> = prefsManager.cardStyle
 
     val savedDevices: StateFlow<List<SavedDeviceEntity>> = dbHelper.savedDevicesFlow
     val auditLogs: StateFlow<List<AuditLogEntity>> = dbHelper.auditLogsFlow
@@ -67,7 +71,9 @@ class BmsRepository(
     fun disconnect() = bleManager.disconnect()
 
     fun setDeveloperMode(enabled: Boolean) = prefsManager.setDeveloperMode(enabled)
-    fun setDarkMode(enabled: Boolean) = prefsManager.setDarkMode(enabled)
+    fun setThemeMode(mode: String) = prefsManager.setThemeMode(mode)
+    fun setAccentColor(color: String) = prefsManager.setAccentColor(color)
+    fun setCardStyle(style: String) = prefsManager.setCardStyle(style)
 
     fun addSavedDevice(nickname: String, address: String) = dbHelper.addSavedDevice(nickname, address)
     fun deleteSavedDevice(address: String) = dbHelper.deleteSavedDevice(address)

@@ -55,9 +55,13 @@ class BmsViewModel(private val repository: BmsRepository) : ViewModel() {
     fun clearAuditLogs() = repository.clearAuditLogs()
 
     // --- SETTINGS & PREFERENCES ---
-    val darkMode: StateFlow<Boolean> = repository.darkMode
     val developerMode: StateFlow<Boolean> = repository.developerMode
+    val themeMode: StateFlow<String> = repository.themeMode
+    val accentColor: StateFlow<String> = repository.accentColor
+    val cardStyle: StateFlow<String> = repository.cardStyle
 
-    fun onDarkModeToggled(enabled: Boolean) = repository.setDarkMode(enabled)
     fun onDeveloperModeToggled(enabled: Boolean) = repository.setDeveloperMode(enabled)
+    fun onThemeModeSelected(mode: String) = repository.setThemeMode(mode)
+    fun onAccentColorSelected(color: String) = repository.setAccentColor(color)
+    fun onCardStyleSelected(style: String) = repository.setCardStyle(style)
 }

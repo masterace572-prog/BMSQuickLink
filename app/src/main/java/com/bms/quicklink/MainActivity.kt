@@ -57,9 +57,15 @@ class MainActivity : ComponentActivity() {
         val hasBleSupport = packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)
 
         setContent {
-            val isDarkMode by viewModel.darkMode.collectAsState()
+            val themeMode by viewModel.themeMode.collectAsState()
+            val accentColor by viewModel.accentColor.collectAsState()
+            val cardStyle by viewModel.cardStyle.collectAsState()
 
-            BMSQuickLinkTheme(darkTheme = isDarkMode) {
+            BMSQuickLinkTheme(
+                themeMode = themeMode,
+                accentColorName = accentColor,
+                cardStyle = cardStyle
+            ) {
                 if (!hasBleSupport) {
                     UnsupportedDeviceScreen()
                 } else {
