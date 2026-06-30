@@ -3,18 +3,30 @@ package com.bms.quicklink.data
 import com.bms.quicklink.ble.BleFsmState
 import com.bms.quicklink.ble.BleManager
 import com.bms.quicklink.ble.CommandTask
+import com.bms.quicklink.db.AuditLogEntity
+import com.bms.quicklink.db.BmsDatabaseHelper
+import com.bms.quicklink.db.SavedDeviceEntity
+import com.bms.quicklink.prefs.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-class BmsRepository(private val bleManager: BleManager) {
+class BmsRepository(
+    private val bleManager: BleManager,
+    private val dbHelper: BmsDatabaseHelper,
+    private val prefsManager: PreferencesManager
+) {
 
     private val repositoryScope = CoroutineScope(Dispatchers.Default)
 
     val fsmState: StateFlow<BleFsmState> = bleManager.fsmState
     val scannedDevices: StateFlow<List<BmsDevice>> = bleManager.scannedDevices
-    val developerMode: StateFlow<Boolean> = bleManager.developerMode
+    val developerMode: StateFlow<Boolean> = prefsManager.isDeveloperMode
+    val darkMode: StateFlow<Boolean> = prefsManager.isDarkMode
+
+    val savedDevices: StateFlow<List<SavedDeviceEntity>> = dbHelper.savedDevicesFlow
+    val auditLogs: StateFlow<List<AuditLogEntity>> = dbHelper.auditLogsFlow
 
     private val _errorEvents = MutableSharedFlow<String>(extraBufferCapacity = 10)
     val errorEvents: SharedFlow<String> = merge(bleManager.errorEvents, _errorEvents).shareIn(
@@ -28,10 +40,22 @@ class BmsRepository(private val bleManager: BleManager) {
 
     init {
         repositoryScope.launch {
+            developerMode.collect { enabled ->
+                bleManager.setDeveloperMode(enabled)
+            }
+        }
+
+        repositoryScope.launch {
             fsmState.collect { state ->
-                if (state == BleFsmState.Disconnected) {
-                    // Reset switches on disconnect
-                    _switchState.value = SwitchState()
+                when (state) {
+                    is BleFsmState.Disconnected -> {
+                        _switchState.value = SwitchState()
+                        dbHelper.addAuditLog("DISCONNECT", "ALL", "SUCCESS")
+                    }
+                    is BleFsmState.Connected -> {
+                        dbHelper.addAuditLog("CONNECT", state.device.address, "SUCCESS")
+                    }
+                    else -> {}
                 }
             }
         }
@@ -41,9 +65,18 @@ class BmsRepository(private val bleManager: BleManager) {
     fun stopScan() = bleManager.stopScan()
     fun connect(device: BmsDevice) = bleManager.connect(device)
     fun disconnect() = bleManager.disconnect()
-    fun setDeveloperMode(enabled: Boolean) = bleManager.setDeveloperMode(enabled)
+
+    fun setDeveloperMode(enabled: Boolean) = prefsManager.setDeveloperMode(enabled)
+    fun setDarkMode(enabled: Boolean) = prefsManager.setDarkMode(enabled)
+
+    fun addSavedDevice(nickname: String, address: String) = dbHelper.addSavedDevice(nickname, address)
+    fun deleteSavedDevice(address: String) = dbHelper.deleteSavedDevice(address)
+    fun clearAuditLogs() = dbHelper.clearAuditLogs()
 
     fun executeSwitchCommand(switchType: SwitchType, targetState: Boolean) {
+        val currentState = fsmState.value
+        val deviceAddress = if (currentState is BleFsmState.Connected) currentState.device.address else "UNKNOWN"
+
         // Optimistic pending state
         _switchState.update { current ->
             when (switchType) {
@@ -79,6 +112,7 @@ class BmsRepository(private val bleManager: BleManager) {
                         SwitchType.HEATING -> current.copy(heatingOn = targetState, heatingPending = false)
                     }
                 }
+                dbHelper.addAuditLog("${switchType.name}_TOGGLE_${if(targetState) "ON" else "OFF"}", deviceAddress, "SUCCESS")
             },
             onFailure = { errorMessage ->
                 // Rollback pending state
@@ -90,6 +124,7 @@ class BmsRepository(private val bleManager: BleManager) {
                         SwitchType.HEATING -> current.copy(heatingPending = false)
                     }
                 }
+                dbHelper.addAuditLog("${switchType.name}_TOGGLE_${if(targetState) "ON" else "OFF"}", deviceAddress, "FAILED")
                 repositoryScope.launch {
                     _errorEvents.emit("Command failed: ${switchType.title}")
                 }

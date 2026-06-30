@@ -25,16 +25,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import com.bms.quicklink.ui.BmsScreen
 import com.bms.quicklink.ui.BmsViewModel
 import com.bms.quicklink.ui.BmsViewModelFactory
 import com.bms.quicklink.ui.components.PermissionRationaleDialog
+import com.bms.quicklink.ui.navigation.AppNavigation
 import com.bms.quicklink.ui.theme.BMSQuickLinkTheme
 
 class MainActivity : ComponentActivity() {
 
     private val viewModel: BmsViewModel by viewModels {
-        BmsViewModelFactory((application as MainApplication).repository)
+        val app = application as MainApplication
+        BmsViewModelFactory(app.repository, app.authManager)
     }
 
     private val requiredPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -55,7 +56,9 @@ class MainActivity : ComponentActivity() {
         val hasBleSupport = packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)
 
         setContent {
-            BMSQuickLinkTheme {
+            val isDarkMode by viewModel.darkMode.collectAsState()
+
+            BMSQuickLinkTheme(darkTheme = isDarkMode) {
                 if (!hasBleSupport) {
                     UnsupportedDeviceScreen()
                 } else {
@@ -88,7 +91,7 @@ class MainActivity : ComponentActivity() {
             hasPermissions = allGranted
             if (!allGranted) {
                 val shouldShowRationale = requiredPermissions.any { permission ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION.CODES.M) {
                         shouldShowRequestPermissionRationale(permission)
                     } else false
                 }
@@ -110,7 +113,7 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            BmsScreen(
+            AppNavigation(
                 viewModel = viewModel,
                 hasPermissions = hasPermissions && isBluetoothEnabled,
                 onRequestPermissions = {

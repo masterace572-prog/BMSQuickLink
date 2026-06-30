@@ -1,6 +1,6 @@
 package com.bms.quicklink.ui.components
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -46,8 +46,8 @@ fun ConnectionHeader(
                 statusText = "Connecting...",
                 deviceName = fsmState.device.name,
                 rssi = fsmState.device.rssi,
-                backgroundColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onTertiary,
+                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 icon = Icons.Default.Bluetooth
             )
         }
@@ -64,13 +64,15 @@ fun ConnectionHeader(
     }
 
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(20.dp))
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(24.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -78,15 +80,16 @@ fun ConnectionHeader(
                 imageVector = icon,
                 contentDescription = "Bluetooth Status Icon",
                 tint = contentColor,
-                modifier = Modifier.size(36.dp)
+                modifier = Modifier.size(40.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(20.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = statusText,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     color = contentColor
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = deviceName,
                     style = MaterialTheme.typography.bodyMedium,

@@ -1,6 +1,8 @@
 package com.bms.quicklink.ui.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Balance
 import androidx.compose.material.icons.filled.BatteryChargingFull
@@ -25,11 +27,11 @@ fun ControlPanel(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
             text = "Hardware Control Panel",
-            style = MaterialTheme.typography.titleMedium,
+            style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onBackground
         )
         
@@ -94,16 +96,20 @@ private fun ControlCard(
     onCheckedChange: (Boolean) -> Unit,
     activeColor: Color
 ) {
-    val cardBg = if (isChecked && isEnabled) activeColor else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = if (isEnabled) 1.0f else 0.4f)
-    val contentColor = if (isChecked && isEnabled) MaterialTheme.colorScheme.contentColorFor(activeColor) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (isEnabled) 1.0f else 0.4f)
+    val cardBg = if (isChecked && isEnabled) activeColor else MaterialTheme.colorScheme.surface
+    val contentColor = if (isChecked && isEnabled) MaterialTheme.colorScheme.contentColorFor(activeColor) else MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1.0f else 0.4f)
+    val subtitleColor = if (isChecked && isEnabled) contentColor.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (isEnabled) 1.0f else 0.4f)
 
     Card(
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(20.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -111,22 +117,23 @@ private fun ControlCard(
                 imageVector = icon,
                 contentDescription = title,
                 tint = contentColor,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(36.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(20.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     color = contentColor
                 )
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = contentColor.copy(alpha = 0.8f)
+                    color = subtitleColor
                 )
             }
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(16.dp))
             if (isPending) {
                 CircularProgressIndicator(
                     modifier = Modifier.size(24.dp),
