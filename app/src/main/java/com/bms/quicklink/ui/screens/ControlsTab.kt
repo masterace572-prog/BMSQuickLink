@@ -34,23 +34,19 @@ fun ControlsTab(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+        verticalArrangement = Arrangement.spacedBy(28.dp)
     ) {
-        Text(
-            text = "BMS Control Center",
-            style = MaterialTheme.typography.headlineLarge,
-            color = MaterialTheme.colorScheme.onBackground
-        )
-
-        // Connection Header
-        ConnectionHeader(fsmState = fsmState)
-
-        // Scan / Connect Action Bar
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(
+                text = "BMS Link Console",
+                style = MaterialTheme.typography.headlineLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+            
             when (fsmState) {
                 is BleFsmState.Disconnected -> {
                     Button(
@@ -62,10 +58,10 @@ fun ControlsTab(
                             }
                         },
                         shape = MaterialTheme.shapes.large,
-                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 16.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
                     ) {
                         Icon(imageVector = Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(text = "Start Scan", style = MaterialTheme.typography.labelLarge)
                     }
                 }
@@ -74,10 +70,10 @@ fun ControlsTab(
                         onClick = { viewModel.onStopScanTapped() },
                         shape = MaterialTheme.shapes.large,
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 16.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
                     ) {
                         Icon(imageVector = Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(text = "Stop Scan", style = MaterialTheme.typography.labelLarge)
                     }
                 }
@@ -86,15 +82,15 @@ fun ControlsTab(
                         onClick = { viewModel.onDisconnectTapped() },
                         shape = MaterialTheme.shapes.large,
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 16.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
                     ) {
                         CircularProgressIndicator(
                             modifier = Modifier.size(18.dp),
                             strokeWidth = 2.dp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(modifier = Modifier.width(10.dp))
-                        Text(text = "Cancel Connection", style = MaterialTheme.typography.labelLarge)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = "Cancel", style = MaterialTheme.typography.labelLarge)
                     }
                 }
                 is BleFsmState.Connected -> {
@@ -102,15 +98,18 @@ fun ControlsTab(
                         onClick = { viewModel.onDisconnectTapped() },
                         shape = MaterialTheme.shapes.large,
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                        contentPadding = PaddingValues(horizontal = 28.dp, vertical = 16.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
                     ) {
                         Icon(imageVector = Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(text = "Disconnect", style = MaterialTheme.typography.labelLarge)
                     }
                 }
             }
         }
+
+        // Connection Header
+        ConnectionHeader(fsmState = fsmState)
 
         // Scanned Devices List (Hidden when connected)
         AnimatedVisibility(

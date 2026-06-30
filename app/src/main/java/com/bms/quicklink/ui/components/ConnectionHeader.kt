@@ -3,6 +3,7 @@ package com.bms.quicklink.ui.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bluetooth
@@ -26,7 +27,7 @@ fun ConnectionHeader(
         is BleFsmState.Disconnected -> {
             HeaderData(
                 statusText = "Disconnected",
-                deviceName = "No device connected",
+                deviceName = "No Active BMS",
                 rssi = null,
                 backgroundColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
@@ -37,8 +38,8 @@ fun ConnectionHeader(
         }
         is BleFsmState.Scanning -> {
             HeaderData(
-                statusText = "Scanning...",
-                deviceName = "Searching for compatible BMS...",
+                statusText = "Scanning",
+                deviceName = "Searching for BMS...",
                 rssi = null,
                 backgroundColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
@@ -49,7 +50,7 @@ fun ConnectionHeader(
         }
         is BleFsmState.Connecting -> {
             HeaderData(
-                statusText = "Connecting...",
+                statusText = "Connecting",
                 deviceName = fsmState.device.name,
                 rssi = fsmState.device.rssi,
                 backgroundColor = MaterialTheme.colorScheme.surface,
@@ -74,23 +75,28 @@ fun ConnectionHeader(
     }
 
     Card(
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(32.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         modifier = modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(28.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(32.dp))
     ) {
-        Column(modifier = Modifier.padding(28.dp).fillMaxWidth()) {
+        Column(
+            modifier = Modifier
+                .padding(32.dp)
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.weight(1f)) {
                     Box(
                         modifier = Modifier
-                            .size(56.dp)
-                            .clip(RoundedCornerShape(20.dp))
+                            .size(64.dp)
+                            .clip(RoundedCornerShape(22.dp))
                             .background(badgeColor.copy(alpha = 0.15f)),
                         contentAlignment = Alignment.Center
                     ) {
@@ -98,7 +104,7 @@ fun ConnectionHeader(
                             imageVector = icon,
                             contentDescription = "Status Icon",
                             tint = if (fsmState is BleFsmState.Disconnected) badgeTextColor else badgeColor,
-                            modifier = Modifier.size(28.dp)
+                            modifier = Modifier.size(32.dp)
                         )
                     }
                     Spacer(modifier = Modifier.width(20.dp))
@@ -110,7 +116,7 @@ fun ConnectionHeader(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = if (fsmState is BleFsmState.Connected) fsmState.device.address else "Hardware Status",
+                            text = if (fsmState is BleFsmState.Connected) fsmState.device.address else "System Overview",
                             style = MaterialTheme.typography.bodyMedium,
                             color = contentColor.copy(alpha = 0.6f)
                         )
@@ -120,9 +126,9 @@ fun ConnectionHeader(
                 // Status Badge Pill
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(20.dp))
                         .background(badgeColor)
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 18.dp, vertical = 10.dp)
                 ) {
                     Text(
                         text = statusText,
@@ -133,12 +139,43 @@ fun ConnectionHeader(
             }
 
             if (rssi != null) {
-                Spacer(modifier = Modifier.height(16.dp))
                 Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), modifier = Modifier.fillMaxWidth())
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    Text("Signal Strength (RSSI)", style = MaterialTheme.typography.bodyMedium, color = contentColor.copy(alpha = 0.7f))
-                    Text("$rssi dBm", style = MaterialTheme.typography.labelLarge, color = badgeColor)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("Signal Strength (RSSI)", style = MaterialTheme.typography.bodyMedium, color = contentColor.copy(alpha = 0.7f))
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text("$rssi dBm", style = MaterialTheme.typography.labelLarge, color = badgeColor)
+                    }
+                    
+                    // RSSI Signal Meter Bars
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.Bottom,
+                        modifier = Modifier.height(24.dp)
+                    ) {
+                        val activeBars = when {
+                            rssi > -60 -> 4
+                            rssi > -70 -> 3
+                            rssi > -85 -> 2
+                            else -> 1
+                        }
+                        
+                        for (i in 1..4) {
+                            val barHeight = (i * 6).dp
+                            val isActive = i <= activeBars
+                            Box(
+                                modifier = Modifier
+                                    .width(6.dp)
+                                    .height(barHeight)
+                                    .clip(CircleShape)
+                                    .background(if (isActive) badgeColor else MaterialTheme.colorScheme.surfaceVariant)
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.bms.quicklink.ui.components
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -32,9 +33,10 @@ fun ControlPanel(
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         Text(
-            text = "Hardware Control Panel",
+            text = "Hardware Switch Panel",
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.padding(bottom = 4.dp)
         )
         
         // Switch 1: Charge MOSFET
@@ -104,65 +106,100 @@ private fun ControlCard(
     val titleColor = if (isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
     val subtitleColor = if (isEnabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
     val borderColor = if (isChecked && isEnabled) activeTint.copy(alpha = 0.4f) else MaterialTheme.colorScheme.outline
+    val accentBarColor = if (isChecked && isEnabled) activeTint else Color.Transparent
 
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, borderColor, RoundedCornerShape(24.dp))
+            .border(1.dp, borderColor, RoundedCornerShape(28.dp))
+            .animateContentSize()
     ) {
         Row(
             modifier = Modifier
-                .padding(24.dp)
+                .height(IntrinsicSize.Min)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Left Accent Bar Indicator
             Box(
                 modifier = Modifier
-                    .size(52.dp)
-                    .clip(RoundedCornerShape(18.dp))
-                    .background(iconBg),
-                contentAlignment = Alignment.Center
+                    .width(6.dp)
+                    .fillMaxHeight()
+                    .background(accentBarColor)
+            )
+
+            Row(
+                modifier = Modifier
+                    .padding(24.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = title,
-                    tint = iconColor,
-                    modifier = Modifier.size(26.dp)
-                )
-            }
-            Spacer(modifier = Modifier.width(20.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = titleColor
-                )
-                Spacer(modifier = Modifier.height(3.dp))
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = subtitleColor
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-            if (isPending) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(26.dp),
-                    strokeWidth = 2.5.dp,
-                    color = activeTint
-                )
-            } else {
-                Switch(
-                    checked = isChecked,
-                    onCheckedChange = onCheckedChange,
-                    enabled = isEnabled && !isPending,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = activeTint,
-                        checkedTrackColor = activeTint.copy(alpha = 0.2f)
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(iconBg),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = iconColor,
+                        modifier = Modifier.size(28.dp)
                     )
-                )
+                }
+                Spacer(modifier = Modifier.width(20.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleLarge,
+                            color = titleColor
+                        )
+                        if (isEnabled && !isPending) {
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(if (isChecked) activeTint.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant)
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = if (isChecked) "ACTIVE" else "OFF",
+                                    style = MaterialTheme.typography.labelMedium,
+                                    color = if (isChecked) activeTint else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = subtitleColor
+                    )
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                if (isPending) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(28.dp),
+                        strokeWidth = 2.5.dp,
+                        color = activeTint
+                    )
+                } else {
+                    Switch(
+                        checked = isChecked,
+                        onCheckedChange = onCheckedChange,
+                        enabled = isEnabled && !isPending,
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = activeTint,
+                            checkedTrackColor = activeTint.copy(alpha = 0.2f),
+                            uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                        )
+                    )
+                }
             }
         }
     }

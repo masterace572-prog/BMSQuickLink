@@ -1,5 +1,6 @@
 package com.bms.quicklink.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -7,12 +8,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.db.SavedDeviceEntity
 import com.bms.quicklink.ui.BmsViewModel
@@ -46,22 +50,55 @@ fun SavedDevicesTab(
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
-            IconButton(
+            Button(
                 onClick = { showAddDialog = true },
-                colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                modifier = Modifier.size(48.dp)
+                shape = MaterialTheme.shapes.large,
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
             ) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Device", tint = MaterialTheme.colorScheme.onPrimaryContainer, modifier = Modifier.size(24.dp))
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Device", modifier = Modifier.size(20.dp))
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(text = "Add Profile", style = MaterialTheme.typography.labelLarge)
             }
         }
 
         if (savedDevices.isEmpty()) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(
-                    text = "No saved profiles yet. Connect to a BMS or add one manually.",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(280.dp)
+                    .border(2.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(32.dp))
+                    .padding(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(RoundedCornerShape(22.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(imageVector = Icons.Default.Bluetooth, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(32.dp))
+                    }
+                    Text(
+                        text = "No saved profiles yet",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = "Quickly link and connect to your frequently used BMS hardware by adding a profile.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                    Button(
+                        onClick = { showAddDialog = true },
+                        shape = MaterialTheme.shapes.medium,
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                    ) {
+                        Text(text = "Create Profile", style = MaterialTheme.typography.labelLarge)
+                    }
+                }
             }
         } else {
             LazyColumn(
@@ -112,11 +149,11 @@ private fun SavedDeviceCard(
     val dateString = remember(entity.dateAdded) { dateFormat.format(Date(entity.dateAdded)) }
 
     Card(
-        shape = RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(24.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(28.dp))
     ) {
         Row(
             modifier = Modifier
@@ -124,12 +161,20 @@ private fun SavedDeviceCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Default.Bluetooth,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(36.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Bluetooth,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(28.dp)
+                )
+            }
             Spacer(modifier = Modifier.width(20.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -137,7 +182,7 @@ private fun SavedDeviceCard(
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(3.dp))
                 Text(
                     text = entity.address,
                     style = MaterialTheme.typography.bodyMedium,
@@ -154,13 +199,19 @@ private fun SavedDeviceCard(
             Button(
                 onClick = onConnect,
                 shape = MaterialTheme.shapes.large,
-                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
             ) {
                 Text(text = "Connect", style = MaterialTheme.typography.labelLarge)
+                Spacer(modifier = Modifier.width(6.dp))
+                Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp))
             }
             Spacer(modifier = Modifier.width(10.dp))
-            IconButton(onClick = onDelete) {
-                Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error)
+            IconButton(
+                onClick = onDelete,
+                colors = IconButtonDefaults.iconButtonColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                modifier = Modifier.size(44.dp)
+            ) {
+                Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete", tint = MaterialTheme.colorScheme.error, modifier = Modifier.size(20.dp))
             }
         }
     }
@@ -176,11 +227,11 @@ private fun AddDeviceDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(32.dp),
         containerColor = MaterialTheme.colorScheme.surface,
         title = { Text(text = "Add Saved BMS", style = MaterialTheme.typography.headlineMedium) },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(20.dp), modifier = Modifier.padding(top = 12.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(20.dp), modifier = Modifier.padding(top = 16.dp)) {
                 OutlinedTextField(
                     value = nickname,
                     onValueChange = { nickname = it },
@@ -205,17 +256,17 @@ private fun AddDeviceDialog(
             Button(
                 onClick = { onSave(nickname, address) },
                 enabled = nickname.isNotBlank() && address.isNotBlank(),
-                shape = MaterialTheme.shapes.medium,
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                shape = MaterialTheme.shapes.large,
+                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
             ) {
-                Text("Save", style = MaterialTheme.typography.labelLarge)
+                Text("Save Profile", style = MaterialTheme.typography.labelLarge)
             }
         },
         dismissButton = {
             OutlinedButton(
                 onClick = onDismiss,
-                shape = MaterialTheme.shapes.medium,
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                shape = MaterialTheme.shapes.large,
+                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
             ) {
                 Text("Cancel", style = MaterialTheme.typography.labelLarge)
             }
