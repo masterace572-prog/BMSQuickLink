@@ -1,9 +1,6 @@
 package com.bms.quicklink.ui
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.bms.quicklink.auth.AuthManager
-import com.bms.quicklink.auth.AuthState
 import com.bms.quicklink.ble.BleFsmState
 import com.bms.quicklink.data.BmsDevice
 import com.bms.quicklink.data.BmsRepository
@@ -18,20 +15,7 @@ data class ConfirmationDialogData(
     val targetState: Boolean
 )
 
-class BmsViewModel(
-    private val repository: BmsRepository,
-    private val authManager: AuthManager
-) : ViewModel() {
-
-    // --- AUTH ---
-    val authState: StateFlow<AuthState> = authManager.authState
-    val authErrorMessage: StateFlow<String?> = authManager.errorMessage
-    val authIsLoading: StateFlow<Boolean> = authManager.isLoading
-
-    fun verifyPin(pin: String) = authManager.verifyPin(pin)
-    fun setupPin(pin: String) = authManager.setupPin(pin)
-    fun logout() = authManager.logout()
-    fun clearAuthErrorMessage() = authManager.clearErrorMessage()
+class BmsViewModel(private val repository: BmsRepository) : ViewModel() {
 
     // --- BLE & SWITCHES ---
     val fsmState: StateFlow<BleFsmState> = repository.fsmState

@@ -50,7 +50,7 @@ class BmsRepository(
                 when (state) {
                     is BleFsmState.Disconnected -> {
                         _switchState.value = SwitchState()
-                        dbHelper.addAuditLog("DISCONNECT", "ALL", "SUCCESS")
+                        // Per user request: no disconnect logs, logs only for connected ones
                     }
                     is BleFsmState.Connected -> {
                         dbHelper.addAuditLog("CONNECT", state.device.address, "SUCCESS")
@@ -75,7 +75,11 @@ class BmsRepository(
 
     fun executeSwitchCommand(switchType: SwitchType, targetState: Boolean) {
         val currentState = fsmState.value
-        val deviceAddress = if (currentState is BleFsmState.Connected) currentState.device.address else "UNKNOWN"
+        if (currentState !is BleFsmState.Connected) {
+            repositoryScope.launch { _errorEvents.emit("Cannot execute command: BMS not connected") }
+            return
+        }
+        val deviceAddress = currentState.device.address
 
         // Optimistic pending state
         _switchState.update { current ->
@@ -112,7 +116,7 @@ class BmsRepository(
                         SwitchType.HEATING -> current.copy(heatingOn = targetState, heatingPending = false)
                     }
                 }
-                dbHelper.addAuditLog("${switchType.name}_TOGGLE_${if(targetState) "ON" else "OFF"}", deviceAddress, "SUCCESS")
+                dbHelper.addAuditLog("${switchType.name}_TOGGLE_${if (targetState) "ON" else "OFF"}", deviceAddress, "SUCCESS")
             },
             onFailure = { errorMessage ->
                 // Rollback pending state
@@ -124,7 +128,7 @@ class BmsRepository(
                         SwitchType.HEATING -> current.copy(heatingPending = false)
                     }
                 }
-                dbHelper.addAuditLog("${switchType.name}_TOGGLE_${if(targetState) "ON" else "OFF"}", deviceAddress, "FAILED")
+                dbHelper.addAuditLog("${switchType.name}_TOGGLE_${if (targetState) "ON" else "OFF"}", deviceAddress, "FAILED")
                 repositoryScope.launch {
                     _errorEvents.emit("Command failed: ${switchType.title}")
                 }

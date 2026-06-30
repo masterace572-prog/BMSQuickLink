@@ -1,8 +1,7 @@
 package com.bms.quicklink.ui.screens
 
 import androidx.compose.animation.Crossfade
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Settings
@@ -11,13 +10,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.dp
 import com.bms.quicklink.ui.BmsViewModel
 import com.bms.quicklink.ui.components.ConfirmationDialog
 import kotlinx.coroutines.flow.collectLatest
 
 enum class NavigationTab(val title: String, val icon: ImageVector) {
     CONTROLS("Controls", Icons.Default.Tune),
-    SAVED("Saved Devices", Icons.Default.Bookmark),
+    SAVED("Saved Profiles", Icons.Default.Bookmark),
     SETTINGS("Settings", Icons.Default.Settings)
 }
 
@@ -27,7 +27,6 @@ fun MainScreen(
     viewModel: BmsViewModel,
     hasPermissions: Boolean,
     onRequestPermissions: () -> Unit,
-    onLogout: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableStateOf(NavigationTab.CONTROLS) }
@@ -45,22 +44,33 @@ fun MainScreen(
 
     Scaffold(
         bottomBar = {
-            NavigationBar(
-                containerColor = MaterialTheme.colorScheme.surface,
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ) {
-                NavigationTab.values().forEach { tab ->
-                    NavigationBarItem(
-                        selected = selectedTab == tab,
-                        onClick = { selectedTab = tab },
-                        label = { Text(text = tab.title, style = MaterialTheme.typography.labelMedium) },
-                        icon = { Icon(imageVector = tab.icon, contentDescription = tab.title) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            selectedTextColor = MaterialTheme.colorScheme.primary,
-                            indicatorColor = MaterialTheme.colorScheme.primaryContainer
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Divider(
+                    color = MaterialTheme.colorScheme.outline,
+                    thickness = 1.dp,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                NavigationBar(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentColor = MaterialTheme.colorScheme.onSurface,
+                    tonalElevation = 0.dp,
+                    windowInsets = NavigationBarDefaults.windowInsets
+                ) {
+                    NavigationTab.values().forEach { tab ->
+                        NavigationBarItem(
+                            selected = selectedTab == tab,
+                            onClick = { selectedTab = tab },
+                            label = { Text(text = tab.title, style = MaterialTheme.typography.labelMedium) },
+                            icon = { Icon(imageVector = tab.icon, contentDescription = tab.title, modifier = Modifier.size(22.dp)) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.primary,
+                                indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
                         )
-                    )
+                    }
                 }
             }
         },
@@ -85,8 +95,7 @@ fun MainScreen(
                     onRequestPermissions = onRequestPermissions
                 )
                 NavigationTab.SETTINGS -> SettingsTab(
-                    viewModel = viewModel,
-                    onLogout = onLogout
+                    viewModel = viewModel
                 )
             }
         }

@@ -1,5 +1,6 @@
 package com.bms.quicklink.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
@@ -27,7 +29,7 @@ fun ControlPanel(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         Text(
             text = "Hardware Control Panel",
@@ -44,7 +46,7 @@ fun ControlPanel(
             isPending = switchState.chargePending,
             isEnabled = isConnected,
             onCheckedChange = { onSwitchToggled(SwitchType.CHARGE, it) },
-            activeColor = MaterialTheme.colorScheme.primaryContainer
+            activeTint = MaterialTheme.colorScheme.primary
         )
 
         // Switch 2: Discharge MOSFET
@@ -56,7 +58,7 @@ fun ControlPanel(
             isPending = switchState.dischargePending,
             isEnabled = isConnected,
             onCheckedChange = { onSwitchToggled(SwitchType.DISCHARGE, it) },
-            activeColor = MaterialTheme.colorScheme.primaryContainer
+            activeTint = MaterialTheme.colorScheme.primary
         )
 
         // Switch 3: Auto Balance
@@ -68,7 +70,7 @@ fun ControlPanel(
             isPending = switchState.balancePending,
             isEnabled = isConnected,
             onCheckedChange = { onSwitchToggled(SwitchType.BALANCE, it) },
-            activeColor = MaterialTheme.colorScheme.secondaryContainer
+            activeTint = MaterialTheme.colorScheme.secondary
         )
 
         // Switch 4: Heating
@@ -80,7 +82,7 @@ fun ControlPanel(
             isPending = switchState.heatingPending,
             isEnabled = isConnected && switchState.heatingWritable,
             onCheckedChange = { onSwitchToggled(SwitchType.HEATING, it) },
-            activeColor = MaterialTheme.colorScheme.errorContainer
+            activeTint = MaterialTheme.colorScheme.tertiary
         )
     }
 }
@@ -94,39 +96,50 @@ private fun ControlCard(
     isPending: Boolean,
     isEnabled: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    activeColor: Color
+    activeTint: Color
 ) {
-    val cardBg = if (isChecked && isEnabled) activeColor else MaterialTheme.colorScheme.surface
-    val contentColor = if (isChecked && isEnabled) MaterialTheme.colorScheme.contentColorFor(activeColor) else MaterialTheme.colorScheme.onSurface.copy(alpha = if (isEnabled) 1.0f else 0.4f)
-    val subtitleColor = if (isChecked && isEnabled) contentColor.copy(alpha = 0.8f) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (isEnabled) 1.0f else 0.4f)
+    val cardBg = MaterialTheme.colorScheme.surface
+    val iconBg = if (isChecked && isEnabled) activeTint.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant
+    val iconColor = if (isChecked && isEnabled) activeTint else MaterialTheme.colorScheme.onSurfaceVariant
+    val titleColor = if (isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+    val subtitleColor = if (isEnabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+    val borderColor = if (isChecked && isEnabled) activeTint.copy(alpha = 0.4f) else MaterialTheme.colorScheme.outline
 
     Card(
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(16.dp))
+            .border(1.dp, borderColor, RoundedCornerShape(24.dp))
     ) {
         Row(
             modifier = Modifier
-                .padding(20.dp)
+                .padding(24.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = title,
-                tint = contentColor,
-                modifier = Modifier.size(36.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(52.dp)
+                    .clip(RoundedCornerShape(18.dp))
+                    .background(iconBg),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = title,
+                    tint = iconColor,
+                    modifier = Modifier.size(26.dp)
+                )
+            }
             Spacer(modifier = Modifier.width(20.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = contentColor
+                    style = MaterialTheme.typography.titleLarge,
+                    color = titleColor
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(3.dp))
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodyMedium,
@@ -136,15 +149,19 @@ private fun ControlCard(
             Spacer(modifier = Modifier.width(16.dp))
             if (isPending) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(24.dp),
-                    strokeWidth = 2.dp,
-                    color = contentColor
+                    modifier = Modifier.size(26.dp),
+                    strokeWidth = 2.5.dp,
+                    color = activeTint
                 )
             } else {
                 Switch(
                     checked = isChecked,
                     onCheckedChange = onCheckedChange,
-                    enabled = isEnabled && !isPending
+                    enabled = isEnabled && !isPending,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = activeTint,
+                        checkedTrackColor = activeTint.copy(alpha = 0.2f)
+                    )
                 )
             }
         }

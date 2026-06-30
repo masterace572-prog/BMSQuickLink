@@ -28,14 +28,13 @@ import androidx.core.content.ContextCompat
 import com.bms.quicklink.ui.BmsViewModel
 import com.bms.quicklink.ui.BmsViewModelFactory
 import com.bms.quicklink.ui.components.PermissionRationaleDialog
-import com.bms.quicklink.ui.navigation.AppNavigation
+import com.bms.quicklink.ui.screens.MainScreen
 import com.bms.quicklink.ui.theme.BMSQuickLinkTheme
 
 class MainActivity : ComponentActivity() {
 
     private val viewModel: BmsViewModel by viewModels {
-        val app = application as MainApplication
-        BmsViewModelFactory(app.repository, app.authManager)
+        BmsViewModelFactory((application as MainApplication).repository)
     }
 
     private val requiredPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -113,7 +112,7 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            AppNavigation(
+            MainScreen(
                 viewModel = viewModel,
                 hasPermissions = hasPermissions && isBluetoothEnabled,
                 onRequestPermissions = {
