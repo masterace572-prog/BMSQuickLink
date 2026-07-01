@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
 class BmsRepository(
     private val bleManager: BleManager,
     private val dbHelper: BmsDatabaseHelper,
-    private val prefsManager: PreferencesManager
+    private val prefsManager: PreferencesManager,
+    private val stateModel: BmsStateModel
 ) {
 
     private val repositoryScope = CoroutineScope(Dispatchers.Default)
@@ -34,6 +35,27 @@ class BmsRepository(
     val isOnboardingCompleted: StateFlow<Boolean> = prefsManager.isOnboardingCompleted
 
     val auditLogs: StateFlow<List<AuditLogEntity>> = dbHelper.auditLogsFlow
+
+    // --- TELEMETRY FLOWS ---
+    val totalVoltage: StateFlow<Double> = stateModel.totalVoltage
+    val current: StateFlow<Double> = stateModel.current
+    val power: StateFlow<Double> = stateModel.power
+    val socPercentage: StateFlow<Int> = stateModel.socPercentage
+    val operatingState: StateFlow<BmsOperatingState> = stateModel.operatingState
+    val cells: StateFlow<List<CellTelemetry>> = stateModel.cells
+    val maxCellVoltage: StateFlow<Double> = stateModel.maxCellVoltage
+    val minCellVoltage: StateFlow<Double> = stateModel.minCellVoltage
+    val deltaVoltage: StateFlow<Double> = stateModel.deltaVoltage
+    val mosfetTemp: StateFlow<Double> = stateModel.mosfetTemp
+    val ambientTemp: StateFlow<Double> = stateModel.ambientTemp
+    val cycleCount: StateFlow<Int> = stateModel.cycleCount
+    val batteryHealth: StateFlow<Int> = stateModel.batteryHealth
+
+    val hasActiveFault: StateFlow<Boolean> = stateModel.hasActiveFault
+    val hasOverVoltageFault: StateFlow<Boolean> = stateModel.hasOverVoltageFault
+    val hasUnderVoltageFault: StateFlow<Boolean> = stateModel.hasUnderVoltageFault
+    val hasOverCurrentFault: StateFlow<Boolean> = stateModel.hasOverCurrentFault
+    val hasShortCircuitFault: StateFlow<Boolean> = stateModel.hasShortCircuitFault
 
     private val _errorEvents = MutableSharedFlow<String>(extraBufferCapacity = 10)
     val errorEvents: SharedFlow<String> = merge(bleManager.errorEvents, _errorEvents).shareIn(
@@ -61,7 +83,6 @@ class BmsRepository(
                 when (state) {
                     is BleFsmState.Disconnected -> {
                         _switchState.value = SwitchState()
-                        // Per user request: no disconnect logs, logs only for connected ones
                     }
                     is BleFsmState.Connected -> {
                         dbHelper.addAuditLog("CONNECT", state.device.address, "SUCCESS")
@@ -98,7 +119,6 @@ class BmsRepository(
         }
         val deviceAddress = currentState.device.address
 
-        // Optimistic pending state
         _switchState.update { current ->
             when (switchType) {
                 SwitchType.CHARGE -> current.copy(chargePending = true)
@@ -119,6 +139,8 @@ class BmsRepository(
             incoming.isNotEmpty() && incoming[0] == payload[0]
         }
 
+        bleManager.appendLog("[INFO] Transmitting hex command for ${switchType.title} (Target: ${if (targetState) "ON" else "OFF"})...")
+
         val task = CommandTask(
             switchType = switchType,
             targetState = targetState,
@@ -133,10 +155,10 @@ class BmsRepository(
                         SwitchType.HEATING -> current.copy(heatingOn = targetState, heatingPending = false)
                     }
                 }
+                bleManager.appendLog("[SUCCESS] Command verified: ${switchType.title} successfully switched to ${if (targetState) "ON" else "OFF"}")
                 dbHelper.addAuditLog("${switchType.name}_TOGGLE_${if (targetState) "ON" else "OFF"}", deviceAddress, "SUCCESS")
             },
             onFailure = { errorMessage ->
-                // Rollback pending state
                 _switchState.update { current ->
                     when (switchType) {
                         SwitchType.CHARGE -> current.copy(chargePending = false)
@@ -145,6 +167,8 @@ class BmsRepository(
                         SwitchType.HEATING -> current.copy(heatingPending = false)
                     }
                 }
+                val timeoutVal = verifyTimeoutMs.value
+                bleManager.appendLog("[ERROR] Command failed: ${switchType.title} verification timed out after ${timeoutVal}ms. Rolling back UI.")
                 dbHelper.addAuditLog("${switchType.name}_TOGGLE_${if (targetState) "ON" else "OFF"}", deviceAddress, "FAILED")
                 repositoryScope.launch {
                     _errorEvents.emit("Command failed: ${switchType.title}")

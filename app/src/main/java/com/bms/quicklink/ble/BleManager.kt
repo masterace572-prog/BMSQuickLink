@@ -9,6 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import com.bms.quicklink.data.BmsDevice
+import com.bms.quicklink.data.BmsStateModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,7 +23,7 @@ import java.util.Locale
 import java.util.UUID
 
 @SuppressLint("MissingPermission")
-class BleManager(private val context: Context) {
+class BleManager(private val context: Context, private val stateModel: BmsStateModel) {
 
     private val bluetoothManager: BluetoothManager? =
         context.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager
@@ -61,10 +62,10 @@ class BleManager(private val context: Context) {
     private val timeFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
 
     init {
-        appendLog("System initialized. BLE Manager ready.")
+        appendLog("[SUCCESS] System initialized. BLE Manager ready.")
     }
 
-    private fun appendLog(msg: String) {
+    fun appendLog(msg: String) {
         val timestamp = timeFormat.format(Date())
         val logLine = "[$timestamp] $msg"
         _terminalLogs.value = (_terminalLogs.value + logLine).takeLast(100)
@@ -72,7 +73,7 @@ class BleManager(private val context: Context) {
 
     fun clearTerminalLogs() {
         _terminalLogs.value = emptyList()
-        appendLog("Terminal logs cleared.")
+        appendLog("[INFO] Terminal logs cleared.")
     }
 
     private val scanCallback = object : ScanCallback() {
@@ -83,7 +84,7 @@ class BleManager(private val context: Context) {
                 
                 val exists = _scannedDevices.value.any { it.address == devAddr }
                 if (!exists) {
-                    appendLog("Discovered compatible BMS: $devName ($devAddr) at ${result.rssi} dBm")
+                    appendLog("[SUCCESS] Discovered compatible BMS: $devName ($devAddr) at ${result.rssi} dBm")
                 }
 
                 _scannedDevices.value = ScanFilterHelper.sortAndFilter(
@@ -96,7 +97,7 @@ class BleManager(private val context: Context) {
 
         override fun onScanFailed(errorCode: Int) {
             Log.e("BleManager", "Scan failed with error code: $errorCode")
-            appendLog("BLE Scan failed with OS code: $errorCode")
+            appendLog("[ERROR] BLE Scan failed with OS code: $errorCode")
             _fsmState.value = BleFsmState.Disconnected
             _errorEvents.tryEmit("BLE Scan failed (Code $errorCode)")
         }
@@ -107,40 +108,40 @@ class BleManager(private val context: Context) {
             val device = activeDevice ?: return
             if (status == BluetoothGatt.GATT_SUCCESS && newState == BluetoothProfile.STATE_CONNECTED) {
                 Log.d("BleManager", "Connected to GATT server. Requesting MTU 247...")
-                appendLog("GATT connection established to ${device.address}. Requesting MTU 247...")
+                appendLog("[SUCCESS] GATT connection established to ${device.address}. Requesting MTU 247...")
                 _fsmState.value = BleFsmState.Connecting(device)
                 
                 Handler(Looper.getMainLooper()).postDelayed({
                     val mtuRequested = gatt.requestMtu(247)
                     if (!mtuRequested) {
-                        appendLog("MTU 247 request failed, continuing to discoverServices...")
+                        appendLog("[WARN] MTU 247 request failed, continuing to discoverServices...")
                         gatt.discoverServices()
                     }
                 }, 500)
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                appendLog("Disconnected from GATT server. Status: $status")
+                appendLog("[WARN] Disconnected from GATT server. Status: $status")
                 handleDisconnect()
             } else {
-                appendLog("GATT connection error. Status: $status")
+                appendLog("[ERROR] GATT connection error. Status: $status")
                 handleDisconnect()
                 _errorEvents.tryEmit("Connection failed (Status $status)")
             }
         }
 
         override fun onMtuChanged(gatt: BluetoothGatt, mtu: Int, status: Int) {
-            appendLog("MTU changed to $mtu (Status: $status). Discovering GATT services...")
+            appendLog("[INFO] MTU changed to $mtu (Status: $status). Discovering GATT services...")
             gatt.discoverServices()
         }
 
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status != BluetoothGatt.GATT_SUCCESS) {
-                appendLog("Service discovery failed. Status: $status")
+                appendLog("[ERROR] Service discovery failed. Status: $status")
                 handleDisconnect()
                 _errorEvents.tryEmit("Service discovery failed")
                 return
             }
 
-            appendLog("GATT Services discovered. Scanning for RX/TX characteristics...")
+            appendLog("[INFO] GATT Services discovered. Scanning for RX/TX characteristics...")
             var foundRx: BluetoothGattCharacteristic? = null
             var foundTx: BluetoothGattCharacteristic? = null
 
@@ -161,7 +162,7 @@ class BleManager(private val context: Context) {
             if (foundRx != null && foundTx != null) {
                 rxCharacteristic = foundRx
                 txCharacteristic = foundTx
-                appendLog("Found RX (Write) and TX (Notify) characteristics. Enabling Notifications...")
+                appendLog("[SUCCESS] Found RX (Write) and TX (Notify) characteristics. Enabling Notifications...")
 
                 val enabled = gatt.setCharacteristicNotification(foundTx, true)
                 if (enabled) {
@@ -180,12 +181,12 @@ class BleManager(private val context: Context) {
                         onConnectedReady()
                     }
                 } else {
-                    appendLog("Failed to enable notification descriptor.")
+                    appendLog("[ERROR] Failed to enable notification descriptor.")
                     handleDisconnect()
                     _errorEvents.tryEmit("Failed to enable notifications")
                 }
             } else {
-                appendLog("Required RX/TX characteristics not found. Unsupported device.")
+                appendLog("[ERROR] Required RX/TX characteristics not found. Unsupported device.")
                 handleDisconnect()
                 _errorEvents.tryEmit("Unsupported device (Missing RX/TX)")
             }
@@ -193,10 +194,10 @@ class BleManager(private val context: Context) {
 
         override fun onDescriptorWrite(gatt: BluetoothGatt, descriptor: BluetoothGattDescriptor, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
-                appendLog("CCCD descriptor written successfully. Connected Ready.")
+                appendLog("[SUCCESS] CCCD descriptor written successfully. Connected Ready.")
                 onConnectedReady()
             } else {
-                appendLog("CCCD write failed. Status: $status")
+                appendLog("[ERROR] CCCD write failed. Status: $status")
                 handleDisconnect()
                 _errorEvents.tryEmit("Failed to subscribe to notifications")
             }
@@ -207,6 +208,7 @@ class BleManager(private val context: Context) {
             if (characteristic == txCharacteristic) {
                 val data = characteristic.value
                 if (data != null) {
+                    stateModel.parseIncomingPacket(data)
                     commandEngine.onNotifyReceived(data)
                 }
             }
@@ -218,6 +220,7 @@ class BleManager(private val context: Context) {
             value: ByteArray
         ) {
             if (characteristic == txCharacteristic) {
+                stateModel.parseIncomingPacket(value)
                 commandEngine.onNotifyReceived(value)
             }
         }
@@ -226,13 +229,13 @@ class BleManager(private val context: Context) {
     fun setDeveloperMode(enabled: Boolean) {
         _developerMode.value = enabled
         _scannedDevices.value = emptyList()
-        appendLog("Developer Mode toggled: $enabled")
+        appendLog("[INFO] Developer Mode toggled: $enabled")
     }
 
     fun setSimulationMode(enabled: Boolean) {
         _isSimulationMode.value = enabled
         _scannedDevices.value = emptyList()
-        appendLog("Simulation Mode toggled: $enabled")
+        appendLog("[INFO] Simulation Mode toggled: $enabled")
         if (_fsmState.value !is BleFsmState.Disconnected) {
             disconnect()
         }
@@ -240,7 +243,7 @@ class BleManager(private val context: Context) {
 
     fun setVerifyTimeoutMs(timeoutMs: Long) {
         _verifyTimeoutMs.value = timeoutMs
-        appendLog("GATT Notify Verification Timeout set to $timeoutMs ms")
+        appendLog("[INFO] GATT Notify Verification Timeout set to $timeoutMs ms")
     }
 
     fun isBluetoothEnabled(): Boolean {
@@ -252,7 +255,7 @@ class BleManager(private val context: Context) {
         _fsmState.value = BleFsmState.Scanning
 
         if (_isSimulationMode.value) {
-            appendLog("Starting virtual offline simulation scan...")
+            appendLog("[INFO] Starting virtual offline simulation scan...")
             Handler(Looper.getMainLooper()).postDelayed({
                 val virtualBms1 = BmsDevice(
                     device = null,
@@ -269,8 +272,8 @@ class BleManager(private val context: Context) {
                     timestamp = System.currentTimeMillis()
                 )
                 _scannedDevices.value = listOf(virtualBms1, virtualBms2)
-                appendLog("Discovered virtual simulated hardware: Virtual LiFePO4 BMS (-52 dBm)")
-                appendLog("Discovered virtual simulated hardware: Virtual Smart Pack (-68 dBm)")
+                appendLog("[SUCCESS] Discovered virtual simulated hardware: Virtual LiFePO4 BMS (-52 dBm)")
+                appendLog("[SUCCESS] Discovered virtual simulated hardware: Virtual Smart Pack (-68 dBm)")
             }, 600)
             return
         }
@@ -278,12 +281,12 @@ class BleManager(private val context: Context) {
         val scanner = bluetoothAdapter?.bluetoothLeScanner
         if (scanner == null || !isBluetoothEnabled()) {
             _fsmState.value = BleFsmState.Disconnected
-            appendLog("Scan aborted: Bluetooth is disabled or unsupported on this device.")
+            appendLog("[ERROR] Scan aborted: Bluetooth is disabled or unsupported on this device.")
             _errorEvents.tryEmit("Bluetooth is disabled or unsupported")
             return
         }
 
-        appendLog("Initializing Resolvable Private Address (RPA) scanner...")
+        appendLog("[INFO] Initializing Resolvable Private Address (RPA) scanner...")
         val scanSettings = ScanSettings.Builder()
             .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
             .setReportDelay(0)
@@ -291,10 +294,10 @@ class BleManager(private val context: Context) {
 
         try {
             scanner.startScan(null, scanSettings, scanCallback)
-            appendLog("BLE low-latency scan started successfully.")
+            appendLog("[INFO] BLE low-latency scan started successfully.")
         } catch (e: Exception) {
             Log.e("BleManager", "Start scan failed: ${e.message}")
-            appendLog("Start scan failed with exception: ${e.message}")
+            appendLog("[ERROR] Start scan failed with exception: ${e.message}")
             _fsmState.value = BleFsmState.Disconnected
             _errorEvents.tryEmit("Failed to start scan")
         }
@@ -311,7 +314,7 @@ class BleManager(private val context: Context) {
         }
         if (_fsmState.value == BleFsmState.Scanning) {
             _fsmState.value = BleFsmState.Disconnected
-            appendLog("BLE scan stopped by user.")
+            appendLog("[INFO] BLE scan stopped by user.")
         }
     }
 
@@ -322,12 +325,12 @@ class BleManager(private val context: Context) {
 
         activeDevice = device
         _fsmState.value = BleFsmState.Connecting(device)
-        appendLog("Initializing connection to ${device.name} (${device.address})...")
+        appendLog("[INFO] Initializing connection to ${device.name} (${device.address})...")
 
         if (_isSimulationMode.value || device.device == null) {
             Handler(Looper.getMainLooper()).postDelayed({
-                appendLog("Simulated GATT connection established. MTU 247 negotiated.")
-                appendLog("Simulated RX/TX characteristics mapped. Subscribed to notifications.")
+                appendLog("[SUCCESS] Simulated GATT connection established. MTU 247 negotiated.")
+                appendLog("[SUCCESS] Simulated RX/TX characteristics mapped. Subscribed to notifications.")
                 onConnectedReady()
             }, 800)
             return
@@ -341,7 +344,7 @@ class BleManager(private val context: Context) {
             stopScan()
         }
 
-        appendLog("Initializing direct GATT connect to MAC: $address...")
+        appendLog("[INFO] Initializing direct GATT connect to MAC: $address...")
 
         if (_isSimulationMode.value || bluetoothAdapter == null) {
             val directDevice = BmsDevice(
@@ -366,13 +369,14 @@ class BleManager(private val context: Context) {
             )
             connect(directDevice)
         } catch (e: Exception) {
-            appendLog("Direct connect failed: Invalid MAC Address format.")
+            appendLog("[ERROR] Direct connect failed: Invalid MAC Address format.")
             _errorEvents.tryEmit("Invalid Bluetooth MAC Address format")
         }
     }
 
     fun disconnect() {
         commandEngine.stop()
+        stateModel.stopSimulationEngine()
         currentGatt?.disconnect()
         currentGatt?.close()
         currentGatt = null
@@ -380,31 +384,35 @@ class BleManager(private val context: Context) {
         txCharacteristic = null
         activeDevice = null
         _fsmState.value = BleFsmState.Disconnected
-        appendLog("BMS connection closed by user. Command queue reset.")
+        appendLog("[INFO] BMS connection closed by user. Command queue reset.")
     }
 
     private fun handleDisconnect() {
         commandEngine.stop()
+        stateModel.stopSimulationEngine()
         currentGatt?.close()
         currentGatt = null
         rxCharacteristic = null
         txCharacteristic = null
         _fsmState.value = BleFsmState.Disconnected
-        appendLog("Unexpected disconnect handled safely. Command queue cleared.")
+        appendLog("[WARN] Unexpected disconnect handled safely. Command queue cleared.")
         _errorEvents.tryEmit("Unexpected disconnect")
     }
 
     private fun onConnectedReady() {
         activeDevice?.let { device ->
             _fsmState.value = BleFsmState.Connected(device)
-            appendLog("BMS Quick Link established successfully. Ready for commands.")
+            appendLog("[SUCCESS] BMS Quick Link established successfully. Ready for commands.")
+            if (_isSimulationMode.value) {
+                stateModel.startSimulationEngine()
+            }
             commandEngine.start()
         }
     }
 
     private fun writeRxCharacteristic(data: ByteArray): Boolean {
         if (_isSimulationMode.value) {
-            appendLog("Simulated write command transmitted: [${data.joinToString(" ") { "%02X".format(it) }}]")
+            appendLog("[INFO] Simulated write command transmitted: [${data.joinToString(" ") { "%02X".format(it) }}]")
             return true
         }
 
@@ -417,10 +425,10 @@ class BleManager(private val context: Context) {
             BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
         }
 
-        appendLog("Writing command payload to RX characteristic: [${data.joinToString(" ") { "%02X".format(it) }}]")
+        appendLog("[INFO] Writing command payload to RX characteristic: [${data.joinToString(" ") { "%02X".format(it) }}]")
 
         return try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION.CODES.TIRAMISU) {
                 gatt.writeCharacteristic(char, data, writeType) == BluetoothGatt.GATT_SUCCESS
             } else {
                 @Suppress("DEPRECATION")
@@ -432,7 +440,7 @@ class BleManager(private val context: Context) {
             }
         } catch (e: Exception) {
             Log.e("BleManager", "Write characteristic failed: ${e.message}")
-            appendLog("Write characteristic failed with exception: ${e.message}")
+            appendLog("[ERROR] Write characteristic failed with exception: ${e.message}")
             false
         }
     }

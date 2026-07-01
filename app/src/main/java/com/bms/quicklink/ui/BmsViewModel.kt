@@ -2,10 +2,7 @@ package com.bms.quicklink.ui
 
 import androidx.lifecycle.ViewModel
 import com.bms.quicklink.ble.BleFsmState
-import com.bms.quicklink.data.BmsDevice
-import com.bms.quicklink.data.BmsRepository
-import com.bms.quicklink.data.SwitchState
-import com.bms.quicklink.data.SwitchType
+import com.bms.quicklink.data.*
 import com.bms.quicklink.db.AuditLogEntity
 import kotlinx.coroutines.flow.*
 
@@ -22,6 +19,27 @@ class BmsViewModel(private val repository: BmsRepository) : ViewModel() {
     val switchState: StateFlow<SwitchState> = repository.switchState
     val terminalLogs: StateFlow<List<String>> = repository.terminalLogs
     val errorEvents: SharedFlow<String> = repository.errorEvents
+
+    // --- TELEMETRY FLOWS ---
+    val totalVoltage: StateFlow<Double> = repository.totalVoltage
+    val current: StateFlow<Double> = repository.current
+    val power: StateFlow<Double> = repository.power
+    val socPercentage: StateFlow<Int> = repository.socPercentage
+    val operatingState: StateFlow<BmsOperatingState> = repository.operatingState
+    val cells: StateFlow<List<CellTelemetry>> = repository.cells
+    val maxCellVoltage: StateFlow<Double> = repository.maxCellVoltage
+    val minCellVoltage: StateFlow<Double> = repository.minCellVoltage
+    val deltaVoltage: StateFlow<Double> = repository.deltaVoltage
+    val mosfetTemp: StateFlow<Double> = repository.mosfetTemp
+    val ambientTemp: StateFlow<Double> = repository.ambientTemp
+    val cycleCount: StateFlow<Int> = repository.cycleCount
+    val batteryHealth: StateFlow<Int> = repository.batteryHealth
+
+    val hasActiveFault: StateFlow<Boolean> = repository.hasActiveFault
+    val hasOverVoltageFault: StateFlow<Boolean> = repository.hasOverVoltageFault
+    val hasUnderVoltageFault: StateFlow<Boolean> = repository.hasUnderVoltageFault
+    val hasOverCurrentFault: StateFlow<Boolean> = repository.hasOverCurrentFault
+    val hasShortCircuitFault: StateFlow<Boolean> = repository.hasShortCircuitFault
 
     private val _confirmationDialogState = MutableStateFlow<ConfirmationDialogData?>(null)
     val confirmationDialogState: StateFlow<ConfirmationDialogData?> = _confirmationDialogState

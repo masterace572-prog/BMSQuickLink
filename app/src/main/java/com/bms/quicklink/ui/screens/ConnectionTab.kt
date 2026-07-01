@@ -5,19 +5,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.ble.BleFsmState
 import com.bms.quicklink.ui.BmsViewModel
@@ -176,60 +178,80 @@ fun ConnectionTab(
 
         Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 2.dp))
 
-        // Live Scan & Connection Terminal Console
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Default.Terminal, contentDescription = "Terminal", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Text(
-                        text = "Live Connection Terminal",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
+        // Spectacular Real Terminal Console Card
+        val terminalBorder = if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
 
-                if (terminalLogs.isNotEmpty()) {
-                    TextButton(onClick = { viewModel.onClearTerminalLogsTapped() }) {
-                        Text(text = "Clear Logs", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.error)
+        Card(
+            shape = RoundedCornerShape(cardRadius),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF0C0C0E)), // Real deep hacker/developer terminal background
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(if (cardStyle == "FILLED") 0.dp else 1.dp, terminalBorder, RoundedCornerShape(cardRadius))
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                // Classic Window Title Bar (Terminal Header)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFF252525))
+                        .padding(horizontal = 16.dp, vertical = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Classic macOS/Ubuntu style colored window control dots
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(Color(0xFFFF5F56))) // Red
+                        Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(Color(0xFFFFBD2E))) // Yellow
+                        Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(Color(0xFF27C93F))) // Green
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "bash - bms-quicklink-core ~ 80x24",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = Color(0xFFB0B0B0),
+                            fontFamily = FontFamily.Monospace,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    // Merged Clear Logs Button
+                    if (terminalLogs.isNotEmpty()) {
+                        IconButton(
+                            onClick = { viewModel.onClearTerminalLogsTapped() },
+                            modifier = Modifier.size(24.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.DeleteOutline,
+                                contentDescription = "Clear Logs",
+                                tint = Color(0xFFFF5F56),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
                     }
                 }
-            }
 
-            val terminalBg = when (cardStyle) {
-                "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                "OUTLINED" -> Color.Transparent
-                else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
-            }
-            val terminalBorder = if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
-
-            Card(
-                shape = RoundedCornerShape(cardRadius),
-                colors = CardDefaults.cardColors(containerColor = terminalBg),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(240.dp)
-                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, terminalBorder, RoundedCornerShape(cardRadius))
-            ) {
+                // Terminal Body with Syntax Color Coding
                 Column(
                     modifier = Modifier
                         .padding(20.dp)
-                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .height(240.dp)
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     terminalLogs.forEach { logLine ->
+                        val lineColor = when {
+                            logLine.contains("[ERROR]") || logLine.contains("failed") -> Color(0xFFFF5555) // Bright Red
+                            logLine.contains("[SUCCESS]") || logLine.contains("established") || logLine.contains("ready") -> Color(0xFF50FA7B) // Bright Green
+                            logLine.contains("[WARN]") || logLine.contains("timeout") -> Color(0xFFF1FA8C) // Yellow
+                            else -> Color(0xFFF8F8F2) // Crisp Terminal White
+                        }
+
                         Text(
                             text = logLine,
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
+                            color = lineColor,
+                            fontFamily = FontFamily.Monospace,
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
