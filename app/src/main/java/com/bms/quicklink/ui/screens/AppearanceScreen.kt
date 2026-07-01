@@ -52,20 +52,20 @@ fun AppearanceScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(32.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             // 1. Theme Mode Toggle Pill Bar
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(text = "Theme Mode", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
                 Text(text = "Adjust the active background and surface appearance palette.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(24.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        .padding(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     val modes = listOf("DARK" to "Solid Dark", "LIGHT" to "Solid Light", "SYSTEM" to "System")
                     modes.forEach { (modeKey, modeLabel) ->
@@ -76,10 +76,10 @@ fun AppearanceScreen(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .clip(RoundedCornerShape(20.dp))
+                                .clip(RoundedCornerShape(8.dp))
                                 .background(bgColor)
                                 .clickable { viewModel.onThemeModeSelected(modeKey) }
-                                .padding(vertical = 14.dp),
+                                .padding(vertical = 10.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(text = modeLabel, style = MaterialTheme.typography.titleMedium, color = textColor)
@@ -88,10 +88,10 @@ fun AppearanceScreen(
                 }
             }
 
-            Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 4.dp))
+            Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 2.dp))
 
             // 2. Dynamic Accent Color Swatch Palette
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(text = "Accent Palette", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
                 Text(text = "Customize the solid accent color for active switches, buttons, and navigation indicators.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Row(
@@ -100,19 +100,19 @@ fun AppearanceScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val swatches = listOf(
-                        "BLUE" to ClassicBlueDark,
-                        "EMERALD" to ClassicGreenDark,
-                        "ORANGE" to ClassicOrangeDark,
-                        "ROSE" to ClassicCrimsonDark,
-                        "CYAN" to ClassicTealDark,
-                        "PURPLE" to ClassicPurpleDark
+                        "BLUE" to CorporateBlueDark,
+                        "EMERALD" to CorporateGreenDark,
+                        "ORANGE" to CorporateOrangeDark,
+                        "ROSE" to CorporateRedDark,
+                        "CYAN" to CorporateTealDark,
+                        "PURPLE" to CorporatePurpleDark
                     )
 
                     swatches.forEach { (colorKey, colorValue) ->
                         val isSelected = accentColor == colorKey
                         Box(
                             modifier = Modifier
-                                .size(48.dp)
+                                .size(42.dp)
                                 .clip(CircleShape)
                                 .background(colorValue)
                                 .border(
@@ -124,26 +124,26 @@ fun AppearanceScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             if (isSelected) {
-                                Icon(imageVector = Icons.Default.Check, contentDescription = "Selected", tint = Color.White, modifier = Modifier.size(24.dp))
+                                Icon(imageVector = Icons.Default.Check, contentDescription = "Selected", tint = Color.White, modifier = Modifier.size(20.dp))
                             }
                         }
                     }
                 }
             }
 
-            Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 4.dp))
+            Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 2.dp))
 
             // 3. Card Style Selector Pill Bar
-            Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(text = "Card Style", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
                 Text(text = "Alter the architectural container style across the entire dashboard.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(RoundedCornerShape(24.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        .padding(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     val styles = listOf("FILLED" to "Solid Clean", "OUTLINED" to "Outlined", "GLASS" to "Translucent")
                     styles.forEach { (styleKey, styleLabel) ->
@@ -154,10 +154,10 @@ fun AppearanceScreen(
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .clip(RoundedCornerShape(20.dp))
+                                .clip(RoundedCornerShape(8.dp))
                                 .background(bgColor)
                                 .clickable { viewModel.onCardStyleSelected(styleKey) }
-                                .padding(vertical = 14.dp),
+                                .padding(vertical = 10.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(text = styleLabel, style = MaterialTheme.typography.titleMedium, color = textColor)

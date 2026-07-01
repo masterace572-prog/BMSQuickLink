@@ -2,40 +2,40 @@ package com.bms.quicklink.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Production-Ready Solid Architectural Palette (Zero Neon, Zero Gradients)
-// Rich Solid Dark Mode Palette
-val SolidBackgroundDark = Color(0xFF121212)
-val SolidSurfaceDark = Color(0xFF1E1E1E)
-val SolidSurfaceVariantDark = Color(0xFF2A2A2A)
-val SolidBorderDark = Color(0xFF383838)
+// Professional Corporate Solid Palette (Absolute Zero Neon, Zero Gradients, Zero Pastel Tints)
+// High-End Solid Dark Mode Palette
+val CorporateBackgroundDark = Color(0xFF121212)
+val CorporateSurfaceDark = Color(0xFF1E1E1E)
+val CorporateSurfaceVariantDark = Color(0xFF282828)
+val CorporateBorderDark = Color(0xFF363636)
 
-// Crisp Solid Light Mode Palette
-val SolidBackgroundLight = Color(0xFFF5F5F5)
-val SolidSurfaceLight = Color(0xFFFFFFFF)
-val SolidSurfaceVariantLight = Color(0xFFE8E8E8)
-val SolidBorderLight = Color(0xFFD1D1D1)
+// High-End Solid Light Mode Palette
+val CorporateBackgroundLight = Color(0xFFF5F5F7)
+val CorporateSurfaceLight = Color(0xFFFFFFFF)
+val CorporateSurfaceVariantLight = Color(0xFFEBEBEB)
+val CorporateBorderLight = Color(0xFFD6D6D6)
 
-// Classic Solid Accent Swatches (Premium Corporate & Hardware Utility Tones)
-val ClassicBlueDark = Color(0xFF1976D2)
-val ClassicBlueLight = Color(0xFF0D47A1)
+// Professional Muted Corporate Accent Tones (Strict Solid Utility Swatches)
+val CorporateBlueDark = Color(0xFF2196F3)
+val CorporateBlueLight = Color(0xFF1565C0)
 
-val ClassicGreenDark = Color(0xFF2E7D32)
-val ClassicGreenLight = Color(0xFF1B5E20)
+val CorporateGreenDark = Color(0xFF4CAF50)
+val CorporateGreenLight = Color(0xFF2E7D32)
 
-val ClassicOrangeDark = Color(0xFFE65100)
-val ClassicOrangeLight = Color(0xFFBF360C)
+val CorporateOrangeDark = Color(0xFFFF9800)
+val CorporateOrangeLight = Color(0xFFE65100)
 
-val ClassicCrimsonDark = Color(0xFFC62828)
-val ClassicCrimsonLight = Color(0xFFB71C1C)
+val CorporateRedDark = Color(0xFFF44336)
+val CorporateRedLight = Color(0xFFC62828)
 
-val ClassicTealDark = Color(0xFF00695C)
-val ClassicTealLight = Color(0xFF004D40)
+val CorporateTealDark = Color(0xFF009688)
+val CorporateTealLight = Color(0xFF00695C)
 
-val ClassicPurpleDark = Color(0xFF6A1B9A)
-val ClassicPurpleLight = Color(0xFF4A148C)
+val CorporatePurpleDark = Color(0xFF9C27B0)
+val CorporatePurpleLight = Color(0xFF6A1B9A)
 
-val TextPrimaryDark = Color(0xFFFAFAFA)
-val TextSecondaryDark = Color(0xFFB0B0B0)
+val TextPrimaryDark = Color(0xFFF0F0F0)
+val TextSecondaryDark = Color(0xFFA6A6A6)
 
-val TextPrimaryLight = Color(0xFF212121)
-val TextSecondaryLight = Color(0xFF757575)
+val TextPrimaryLight = Color(0xFF1C1C1E)
+val TextSecondaryLight = Color(0xFF707070)

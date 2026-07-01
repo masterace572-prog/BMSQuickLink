@@ -9,28 +9,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class BmsDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
     companion object {
         private const val DATABASE_NAME = "bms_quicklink.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
 
         // Tables
-        private const val TABLE_AUTH = "user_auth"
-        private const val TABLE_SAVED_DEVICES = "saved_devices"
         private const val TABLE_AUDIT_LOGS = "audit_logs"
-
-        // Columns Auth
-        private const val COL_AUTH_ID = "id"
-        private const val COL_AUTH_PIN_HASH = "pin_hash"
-
-        // Columns Saved Devices
-        private const val COL_DEV_ID = "id"
-        private const val COL_DEV_NICKNAME = "nickname"
-        private const val COL_DEV_ADDRESS = "address"
-        private const val COL_DEV_DATE = "date_added"
 
         // Columns Audit Logs
         private const val COL_LOG_ID = "id"
@@ -42,30 +29,14 @@ class BmsDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
 
     private val dbScope = CoroutineScope(Dispatchers.Default)
 
-    private val _savedDevicesFlow = MutableStateFlow<List<SavedDeviceEntity>>(emptyList())
-    val savedDevicesFlow: StateFlow<List<SavedDeviceEntity>> = _savedDevicesFlow
-
     private val _auditLogsFlow = MutableStateFlow<List<AuditLogEntity>>(emptyList())
     val auditLogsFlow: StateFlow<List<AuditLogEntity>> = _auditLogsFlow
 
     init {
-        refreshSavedDevices()
         refreshAuditLogs()
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-        db.execSQL(
-            "CREATE TABLE $TABLE_AUTH (" +
-                    "$COL_AUTH_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "$COL_AUTH_PIN_HASH TEXT NOT NULL)"
-        )
-        db.execSQL(
-            "CREATE TABLE $TABLE_SAVED_DEVICES (" +
-                    "$COL_DEV_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    "$COL_DEV_NICKNAME TEXT NOT NULL, " +
-                    "$COL_DEV_ADDRESS TEXT NOT NULL UNIQUE, " +
-                    "$COL_DEV_DATE INTEGER NOT NULL)"
-        )
         db.execSQL(
             "CREATE TABLE $TABLE_AUDIT_LOGS (" +
                     "$COL_LOG_ID INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -77,63 +48,10 @@ class BmsDatabaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_N
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_AUTH")
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_SAVED_DEVICES")
+        db.execSQL("DROP TABLE IF EXISTS user_auth")
+        db.execSQL("DROP TABLE IF EXISTS saved_devices")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_AUDIT_LOGS")
         onCreate(db)
-    }
-
-    // --- SAVED DEVICES CRUD ---
-    fun addSavedDevice(nickname: String, address: String) {
-        dbScope.launch(Dispatchers.IO) {
-            val db = writableDatabase
-            val values = ContentValues().apply {
-                put(COL_DEV_NICKNAME, nickname)
-                put(COL_DEV_ADDRESS, address)
-                put(COL_DEV_DATE, System.currentTimeMillis())
-            }
-            db.insertWithOnConflict(TABLE_SAVED_DEVICES, null, values, SQLiteDatabase.CONFLICT_REPLACE)
-            refreshSavedDevices()
-        }
-    }
-
-    fun updateSavedDeviceNickname(address: String, newNickname: String) {
-        dbScope.launch(Dispatchers.IO) {
-            val db = writableDatabase
-            val values = ContentValues().apply {
-                put(COL_DEV_NICKNAME, newNickname)
-            }
-            db.update(TABLE_SAVED_DEVICES, values, "$COL_DEV_ADDRESS = ?", arrayOf(address))
-            refreshSavedDevices()
-        }
-    }
-
-    fun deleteSavedDevice(address: String) {
-        dbScope.launch(Dispatchers.IO) {
-            val db = writableDatabase
-            db.delete(TABLE_SAVED_DEVICES, "$COL_DEV_ADDRESS = ?", arrayOf(address))
-            refreshSavedDevices()
-        }
-    }
-
-    private fun refreshSavedDevices() {
-        dbScope.launch(Dispatchers.IO) {
-            val db = readableDatabase
-            val cursor = db.query(TABLE_SAVED_DEVICES, null, null, null, null, null, "$COL_DEV_DATE DESC")
-            val list = mutableListOf<SavedDeviceEntity>()
-            while (cursor.moveToNext()) {
-                list.add(
-                    SavedDeviceEntity(
-                        id = cursor.getLong(cursor.getColumnIndexOrThrow(COL_DEV_ID)),
-                        nickname = cursor.getString(cursor.getColumnIndexOrThrow(COL_DEV_NICKNAME)),
-                        address = cursor.getString(cursor.getColumnIndexOrThrow(COL_DEV_ADDRESS)),
-                        dateAdded = cursor.getLong(cursor.getColumnIndexOrThrow(COL_DEV_DATE))
-                    )
-                )
-            }
-            cursor.close()
-            _savedDevicesFlow.value = list
-        }
     }
 
     // --- AUDIT LOGS CRUD ---

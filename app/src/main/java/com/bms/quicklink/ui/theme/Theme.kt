@@ -30,64 +30,64 @@ fun BMSQuickLinkTheme(
     }
 
     val primaryAccent = when (accentColorName) {
-        "BLUE" -> if (isDark) ClassicBlueDark else ClassicBlueLight
-        "EMERALD" -> if (isDark) ClassicGreenDark else ClassicGreenLight
-        "ORANGE" -> if (isDark) ClassicOrangeDark else ClassicOrangeLight
-        "ROSE" -> if (isDark) ClassicCrimsonDark else ClassicCrimsonLight
-        "CYAN" -> if (isDark) ClassicTealDark else ClassicTealLight
-        "PURPLE" -> if (isDark) ClassicPurpleDark else ClassicPurpleLight
-        else -> if (isDark) ClassicBlueDark else ClassicBlueLight
+        "BLUE" -> if (isDark) CorporateBlueDark else CorporateBlueLight
+        "EMERALD" -> if (isDark) CorporateGreenDark else CorporateGreenLight
+        "ORANGE" -> if (isDark) CorporateOrangeDark else CorporateOrangeLight
+        "ROSE" -> if (isDark) CorporateRedDark else CorporateRedLight
+        "CYAN" -> if (isDark) CorporateTealDark else CorporateTealLight
+        "PURPLE" -> if (isDark) CorporatePurpleDark else CorporatePurpleLight
+        else -> if (isDark) CorporateBlueDark else CorporateBlueLight
     }
 
     val colorScheme = if (isDark) {
         darkColorScheme(
             primary = primaryAccent,
-            onPrimary = SolidBackgroundDark,
-            primaryContainer = primaryAccent.copy(alpha = 0.25f),
+            onPrimary = CorporateBackgroundDark,
+            primaryContainer = CorporateSurfaceVariantDark, // No neon/pastel primary container
             onPrimaryContainer = primaryAccent,
             secondary = primaryAccent,
-            onSecondary = SolidBackgroundDark,
-            secondaryContainer = primaryAccent.copy(alpha = 0.25f),
+            onSecondary = CorporateBackgroundDark,
+            secondaryContainer = CorporateSurfaceVariantDark,
             onSecondaryContainer = primaryAccent,
             tertiary = primaryAccent,
-            onTertiary = SolidBackgroundDark,
-            tertiaryContainer = primaryAccent.copy(alpha = 0.25f),
+            onTertiary = CorporateBackgroundDark,
+            tertiaryContainer = CorporateSurfaceVariantDark,
             onTertiaryContainer = primaryAccent,
-            surface = SolidSurfaceDark,
+            surface = CorporateSurfaceDark,
             onSurface = TextPrimaryDark,
-            surfaceVariant = SolidSurfaceVariantDark,
+            surfaceVariant = CorporateSurfaceVariantDark,
             onSurfaceVariant = TextSecondaryDark,
-            background = SolidBackgroundDark,
+            background = CorporateBackgroundDark,
             onBackground = TextPrimaryDark,
-            error = ClassicCrimsonDark,
-            errorContainer = ClassicCrimsonDark.copy(alpha = 0.25f),
-            onErrorContainer = ClassicCrimsonDark,
-            outline = SolidBorderDark
+            error = CorporateRedDark,
+            errorContainer = CorporateSurfaceVariantDark,
+            onErrorContainer = CorporateRedDark,
+            outline = CorporateBorderDark
         )
     } else {
         lightColorScheme(
             primary = primaryAccent,
-            onPrimary = SolidSurfaceLight,
-            primaryContainer = primaryAccent.copy(alpha = 0.18f),
+            onPrimary = CorporateSurfaceLight,
+            primaryContainer = CorporateSurfaceVariantLight, // No neon/pastel primary container
             onPrimaryContainer = primaryAccent,
             secondary = primaryAccent,
-            onSecondary = SolidSurfaceLight,
-            secondaryContainer = primaryAccent.copy(alpha = 0.18f),
+            onSecondary = CorporateSurfaceLight,
+            secondaryContainer = CorporateSurfaceVariantLight,
             onSecondaryContainer = primaryAccent,
             tertiary = primaryAccent,
-            onTertiary = SolidSurfaceLight,
-            tertiaryContainer = primaryAccent.copy(alpha = 0.18f),
+            onTertiary = CorporateSurfaceLight,
+            tertiaryContainer = CorporateSurfaceVariantLight,
             onTertiaryContainer = primaryAccent,
-            surface = SolidSurfaceLight,
+            surface = CorporateSurfaceLight,
             onSurface = TextPrimaryLight,
-            surfaceVariant = SolidSurfaceVariantLight,
+            surfaceVariant = CorporateSurfaceVariantLight,
             onSurfaceVariant = TextSecondaryLight,
-            background = SolidBackgroundLight,
+            background = CorporateBackgroundLight,
             onBackground = TextPrimaryLight,
-            error = ClassicCrimsonLight,
-            errorContainer = ClassicCrimsonLight.copy(alpha = 0.18f),
-            onErrorContainer = ClassicCrimsonLight,
-            outline = SolidBorderLight
+            error = CorporateRedLight,
+            errorContainer = CorporateSurfaceVariantLight,
+            onErrorContainer = CorporateRedLight,
+            outline = CorporateBorderLight
         )
     }
 

@@ -1,11 +1,11 @@
-# BMS Quick Link & Control (7.0 Production-Ready Solid Edition)
+# BMS Quick Link & Control (8.0 Final Professional Corporate Edition)
 
-**Version:** 7.0 (Production-Ready Solid UI Edition)  
+**Version:** 8.0 (Final Professional Corporate Edition)  
 **Platform:** Android  
 **Language:** Kotlin  
 **UI Framework:** Jetpack Compose (Material 3)  
-**Design System:** Solid Architectural Palette (Zero Neon, Zero Gradients)  
-**Backend:** Local SQLite Database (Saved Devices & Connected-Only Audit Logs)  
+**Design System:** Professional Corporate Palette (Absolute Zero Neon, Zero Pastel Tints, Zero Gradients)  
+**Backend:** Local SQLite Database (Connected-Only Audit Logs)  
 **Communication:** Bluetooth Low Energy (BLE)  
 **Architecture:** MVVM + Repository + SharedPreferences Flows + StateFlow + Coroutines
 
@@ -20,18 +20,20 @@ Per the PRD, the application intentionally excludes every monitoring, telemetry,
 
 ---
 
-## Production-Ready Solid Architectural Specifications (v7.0)
+## Elite Non-AI Corporate Specifications (v8.0 Final)
 
-### 💎 Professional Solid Palette (Zero Neon & Zero Gradients)
-To deliver the ultimate corporate hardware dashboard finish, all harsh neon tones have been replaced with rich, classic solid architectural colors:
-- **Rich Solid Dark Mode:** Deep solid charcoal background (`0xFF121212`) and solid surface (`0xFF1E1E1E`) with crisp solid borders (`0xFF383838`).
-- **Crisp Solid Light Mode:** Light neutral background (`0xFFF5F5F5`) and pure solid white surface (`0xFFFFFFFF`).
-- **Classic Solid Accent Swatches:** Offers 6 professional hardware utility pairings: `Classic Blue` (`0xFF1976D2`), `Classic Green` (`0xFF2E7D32`), `Classic Orange` (`0xFFE65100`), `Classic Crimson` (`0xFFC62828`), `Classic Teal` (`0xFF00695C`), and `Classic Purple` (`0xFF6A1B9A`).
+### 💎 Strict Professional Solid Palette & Layouts (Absolute Zero Neon)
+To guarantee a true real-world corporate engineering look and eliminate all clunky AI-generated aesthetics, the entire application has been redesigned around strict professional design guidelines:
+- **High-End Neutral Palette:** Deep solid charcoal background (`0xFF121212`) and solid surface (`0xFF1E1E1E`) for Dark Mode; crisp light neutral background (`0xFFF5F5F7`) and pure white surface (`0xFFFFFFFF`) for Light Mode.
+- **Classic Solid Utility Accent Tones:** Muted corporate swatches (`Corporate Blue`, `Corporate Green`, `Corporate Orange`, `Corporate Red`, `Corporate Teal`, `Corporate Purple`) replace all neon shades.
+- **Refined Typographic Hierarchy (`Type.kt`):** Completely scaled down massive, clunky titles in favor of a crisp, professional corporate typographic scale (`headlineLarge` -> 24sp bold, `titleMedium` -> 16sp medium, `bodyMedium` -> 13sp regular).
+- **Clean Icon Styling:** Fully removed all glitchy SVG paths and pastel-tinted icon background boxes. All components use perfectly rendered standard Material Icons sitting cleanly on the surface.
 
-### 🌟 Production-Ready Layout Adjustments
-- **Generous Dialog Formats:** All dialogs (`AddDeviceDialog`, `EditDeviceDialog`, `ConfirmationDialog`, `PermissionRationaleDialog`) feature generous 32dp corner rounding, prominent typography titles, and spacious primary button padding.
-- **Uncluttered Top App Bars:** Perfectly colored solid backgrounds matching the active theme mode across `AppearanceScreen`, `DeveloperScreen`, `TermsScreen`, and `PrivacyScreen`.
-- **Streamlined Navigation & Spacing:** Enforces robust bottom padding (`110.dp`) above the floating navigation dock across all console tabs to guarantee full unhindered scrolling.
+### 🧭 Streamlined Navigation Suite (`MainScreen.kt`)
+The bottom navigation bar has been re-architected into a compact, professional 3-tab layout:
+1. **Connection Tab (`ConnectionTab.kt`):** Dedicated exclusively to connection lifecycle management, featuring the `ConnectionHeader`, primary Action Buttons, Quick Link Direct Launch, and discovered devices radar. No hardware switches are present here.
+2. **Controls Tab (`ControlsTab.kt`):** Dedicated exclusively to hardware controls (`ControlPanel`). If no BLE connection is active, it presents an elegant professional empty state locking the switches.
+3. **Settings Tab (`SettingsTab.kt`):** Houses the Appearance Console, Developer Profile, Legal copy, Verification Timeout customizer, and connected-only SQLite Audit Logs.
 
 ---
 

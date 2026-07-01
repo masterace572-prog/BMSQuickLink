@@ -5,7 +5,6 @@ import com.bms.quicklink.ble.BleManager
 import com.bms.quicklink.ble.CommandTask
 import com.bms.quicklink.db.AuditLogEntity
 import com.bms.quicklink.db.BmsDatabaseHelper
-import com.bms.quicklink.db.SavedDeviceEntity
 import com.bms.quicklink.prefs.PreferencesManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,7 +31,6 @@ class BmsRepository(
     val isSimulationMode: StateFlow<Boolean> = prefsManager.isSimulationMode
     val isOnboardingCompleted: StateFlow<Boolean> = prefsManager.isOnboardingCompleted
 
-    val savedDevices: StateFlow<List<SavedDeviceEntity>> = dbHelper.savedDevicesFlow
     val auditLogs: StateFlow<List<AuditLogEntity>> = dbHelper.auditLogsFlow
 
     private val _errorEvents = MutableSharedFlow<String>(extraBufferCapacity = 10)
@@ -86,9 +84,6 @@ class BmsRepository(
     fun setSimulationMode(enabled: Boolean) = prefsManager.setSimulationMode(enabled)
     fun setOnboardingCompleted(completed: Boolean) = prefsManager.setOnboardingCompleted(completed)
 
-    fun addSavedDevice(nickname: String, address: String) = dbHelper.addSavedDevice(nickname, address)
-    fun updateSavedDeviceNickname(address: String, newNickname: String) = dbHelper.updateSavedDeviceNickname(address, newNickname)
-    fun deleteSavedDevice(address: String) = dbHelper.deleteSavedDevice(address)
     fun clearAuditLogs() = dbHelper.clearAuditLogs()
 
     fun executeSwitchCommand(switchType: SwitchType, targetState: Boolean) {

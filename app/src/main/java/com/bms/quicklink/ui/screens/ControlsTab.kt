@@ -8,21 +8,19 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.ble.BleFsmState
 import com.bms.quicklink.ui.BmsViewModel
-import com.bms.quicklink.ui.components.ConnectionHeader
 import com.bms.quicklink.ui.components.ControlPanel
-import com.bms.quicklink.ui.components.DeviceListCard
 import com.bms.quicklink.ui.theme.LocalCardStyle
 
 @Composable
@@ -33,19 +31,16 @@ fun ControlsTab(
     modifier: Modifier = Modifier
 ) {
     val fsmState by viewModel.fsmState.collectAsState()
-    val scannedDevices by viewModel.scannedDevices.collectAsState()
     val switchState by viewModel.switchState.collectAsState()
     val isSimulationMode by viewModel.isSimulationMode.collectAsState()
-
-    var customMacAddress by remember { mutableStateOf("") }
     val cardStyle = LocalCardStyle.current
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp, vertical = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
+            .padding(horizontal = 16.dp, vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // App Title & Simulation Mode Badge
         Row(
@@ -54,7 +49,7 @@ fun ControlsTab(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "BMS Link Console",
+                text = "Hardware Controls",
                 style = MaterialTheme.typography.headlineLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -62,183 +57,71 @@ fun ControlsTab(
             if (isSimulationMode) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(MaterialTheme.colorScheme.tertiaryContainer)
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
+                        .padding(horizontal = 10.dp, vertical = 4.dp)
                 ) {
                     Text(
                         text = "DEMO MODE",
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.tertiary
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }
         }
 
-        // Connection Header Card
-        ConnectionHeader(fsmState = fsmState)
-
-        // Primary Action Button Bar (Placed below header to prevent text wrapping/crowding)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            when (fsmState) {
-                is BleFsmState.Disconnected -> {
-                    Button(
-                        onClick = {
-                            if (hasPermissions || isSimulationMode) {
-                                viewModel.onScanTapped()
-                            } else {
-                                onRequestPermissions()
-                            }
-                        },
-                        shape = MaterialTheme.shapes.large,
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
-                    ) {
-                        Icon(imageVector = Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(22.dp))
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(text = if (isSimulationMode) "Scan Virtual BMS" else "Start Scan", style = MaterialTheme.typography.titleMedium)
-                    }
-                }
-                is BleFsmState.Scanning -> {
-                    Button(
-                        onClick = { viewModel.onStopScanTapped() },
-                        shape = MaterialTheme.shapes.large,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
-                    ) {
-                        Icon(imageVector = Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(22.dp))
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(text = "Stop Scan", style = MaterialTheme.typography.titleMedium)
-                    }
-                }
-                is BleFsmState.Connecting -> {
-                    Button(
-                        onClick = { viewModel.onDisconnectTapped() },
-                        shape = MaterialTheme.shapes.large,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                            strokeWidth = 2.5.dp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(text = "Cancel Connection", style = MaterialTheme.typography.titleMedium)
-                    }
-                }
-                is BleFsmState.Connected -> {
-                    Button(
-                        onClick = { viewModel.onDisconnectTapped() },
-                        shape = MaterialTheme.shapes.large,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
-                    ) {
-                        Icon(imageVector = Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(22.dp))
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(text = "Disconnect", style = MaterialTheme.typography.titleMedium)
-                    }
-                }
-            }
-        }
-
-        // Quick Link Direct Launch Card (Only visible when disconnected)
-        AnimatedVisibility(
-            visible = fsmState is BleFsmState.Disconnected && scannedDevices.isEmpty(),
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
-        ) {
-            val directBg = when (cardStyle) {
+        if (fsmState !is BleFsmState.Connected) {
+            // Elegant Professional Empty State
+            val emptyBg = when (cardStyle) {
                 "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
                 "OUTLINED" -> Color.Transparent
-                else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                else -> MaterialTheme.colorScheme.surface
             }
-            val directBorder = if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline
+            val emptyBorder = if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline
 
             Card(
-                shape = RoundedCornerShape(28.dp),
-                colors = CardDefaults.cardColors(containerColor = directBg),
+                shape = RoundedCornerShape(12.dp),
+                colors = CardDefaults.cardColors(containerColor = emptyBg),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, directBorder, RoundedCornerShape(28.dp))
+                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, emptyBorder, RoundedCornerShape(12.dp))
             ) {
-                Column(modifier = Modifier.padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                Column(
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Lock,
+                        contentDescription = "Locked",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(40.dp)
+                    )
                     Text(
-                        text = "Quick Link Direct Launch",
+                        text = "Controls Locked",
                         style = MaterialTheme.typography.titleLarge,
                         color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
-                        text = "Enter a known Bluetooth MAC address to instantly establish a direct GATT connection without scanning.",
+                        text = "Please establish a BLE connection in the Connection tab to unlock hardware controls.",
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center
                     )
-                    OutlinedTextField(
-                        value = customMacAddress,
-                        onValueChange = { customMacAddress = it },
-                        label = { Text("Bluetooth MAC Address") },
-                        placeholder = { Text("00:11:22:33:44:55") },
-                        singleLine = true,
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Button(
-                        onClick = {
-                            if (hasPermissions || isSimulationMode) {
-                                viewModel.onConnectToMacAddressTapped(customMacAddress)
-                            } else {
-                                onRequestPermissions()
-                            }
-                        },
-                        enabled = customMacAddress.isNotBlank(),
-                        shape = MaterialTheme.shapes.large,
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
-                    ) {
-                        Text(text = "Direct Connect", style = MaterialTheme.typography.titleMedium)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(20.dp))
-                    }
                 }
             }
-        }
-
-        // Scanned Devices List (Hidden when connected)
-        AnimatedVisibility(
-            visible = fsmState is BleFsmState.Scanning || (fsmState is BleFsmState.Disconnected && scannedDevices.isNotEmpty()),
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
-        ) {
-            DeviceListCard(
-                devices = scannedDevices,
-                onConnectTapped = { device ->
-                    if (hasPermissions || isSimulationMode) {
-                        viewModel.onConnectTapped(device)
-                        viewModel.addSavedDevice(device.name, device.address)
-                    } else {
-                        onRequestPermissions()
-                    }
-                }
+        } else {
+            // Control Panel
+            ControlPanel(
+                isConnected = true,
+                switchState = switchState,
+                onSwitchToggled = viewModel::onSwitchToggled
             )
         }
 
-        Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 4.dp))
-
-        // Control Panel
-        ControlPanel(
-            isConnected = fsmState is BleFsmState.Connected,
-            switchState = switchState,
-            onSwitchToggled = viewModel::onSwitchToggled
-        )
-
-        // Bottom spacer to ensure content is fully scrollable above the floating navigation dock
         Spacer(modifier = Modifier.height(110.dp))
     }
 }

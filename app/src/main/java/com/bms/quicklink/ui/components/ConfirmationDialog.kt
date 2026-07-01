@@ -28,22 +28,22 @@ fun ConfirmationDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(32.dp),
+        shape = RoundedCornerShape(16.dp),
         containerColor = MaterialTheme.colorScheme.surface,
         icon = {
             Icon(imageVector = Icons.Default.Warning, contentDescription = "Warning Icon", tint = MaterialTheme.colorScheme.tertiary)
         },
         title = {
-            Text(text = "Confirm Hardware Change", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
+            Text(text = "Confirm Hardware Change", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
         },
         text = {
-            Text(text = bodyText, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp))
+            Text(text = bodyText, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp))
         },
         confirmButton = {
             Button(
                 onClick = onConfirm,
-                shape = MaterialTheme.shapes.large,
-                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
             ) {
                 Text(text = "Confirm", style = MaterialTheme.typography.titleMedium)
             }
@@ -51,8 +51,8 @@ fun ConfirmationDialog(
         dismissButton = {
             OutlinedButton(
                 onClick = onDismiss,
-                shape = MaterialTheme.shapes.large,
-                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
             ) {
                 Text(text = "Cancel", style = MaterialTheme.typography.titleMedium)
             }

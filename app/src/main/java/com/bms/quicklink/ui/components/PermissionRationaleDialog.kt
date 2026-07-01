@@ -19,13 +19,13 @@ fun PermissionRationaleDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(32.dp),
+        shape = RoundedCornerShape(16.dp),
         containerColor = MaterialTheme.colorScheme.surface,
         icon = {
             Icon(imageVector = Icons.Default.Info, contentDescription = "Permission Info", tint = MaterialTheme.colorScheme.primary)
         },
         title = {
-            Text(text = "Permissions Required", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
+            Text(text = "Permissions Required", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
         },
         text = {
             Text(
@@ -34,7 +34,7 @@ fun PermissionRationaleDialog(
                 } else {
                     "BMS Quick Link & Control requires both Bluetooth and Location permissions for successfully finding, scanning, and establishing a stable connection with your battery management system."
                 },
-                style = MaterialTheme.typography.bodyLarge,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp)
             )
@@ -43,16 +43,16 @@ fun PermissionRationaleDialog(
             if (isPermanentDenial) {
                 Button(
                     onClick = onOpenSettings,
-                    shape = MaterialTheme.shapes.large,
-                    contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
                 ) {
                     Text(text = "Open Settings", style = MaterialTheme.typography.titleMedium)
                 }
             } else {
                 Button(
                     onClick = onRetry,
-                    shape = MaterialTheme.shapes.large,
-                    contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
                 ) {
                     Text(text = "Retry", style = MaterialTheme.typography.titleMedium)
                 }
@@ -61,8 +61,8 @@ fun PermissionRationaleDialog(
         dismissButton = {
             OutlinedButton(
                 onClick = onDismiss,
-                shape = MaterialTheme.shapes.large,
-                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
             ) {
                 Text(text = "Cancel", style = MaterialTheme.typography.titleMedium)
             }

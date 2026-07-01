@@ -7,7 +7,6 @@ import com.bms.quicklink.data.BmsRepository
 import com.bms.quicklink.data.SwitchState
 import com.bms.quicklink.data.SwitchType
 import com.bms.quicklink.db.AuditLogEntity
-import com.bms.quicklink.db.SavedDeviceEntity
 import kotlinx.coroutines.flow.*
 
 data class ConfirmationDialogData(
@@ -48,12 +47,8 @@ class BmsViewModel(private val repository: BmsRepository) : ViewModel() {
     }
 
     // --- DATABASE OPERATIONS ---
-    val savedDevices: StateFlow<List<SavedDeviceEntity>> = repository.savedDevices
     val auditLogs: StateFlow<List<AuditLogEntity>> = repository.auditLogs
 
-    fun addSavedDevice(nickname: String, address: String) = repository.addSavedDevice(nickname, address)
-    fun updateSavedDeviceNickname(address: String, newNickname: String) = repository.updateSavedDeviceNickname(address, newNickname)
-    fun deleteSavedDevice(address: String) = repository.deleteSavedDevice(address)
     fun clearAuditLogs() = repository.clearAuditLogs()
 
     // --- SETTINGS & PREFERENCES ---

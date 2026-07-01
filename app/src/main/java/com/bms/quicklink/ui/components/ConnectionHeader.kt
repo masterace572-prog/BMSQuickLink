@@ -89,45 +89,37 @@ fun ConnectionHeader(
     }
 
     Card(
-        shape = RoundedCornerShape(32.dp),
+        shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         modifier = modifier
             .fillMaxWidth()
-            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(32.dp))
+            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(12.dp))
     ) {
         Column(
             modifier = Modifier
-                .padding(28.dp)
+                .padding(20.dp)
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Top Row: Icon Container & Status Badge Pill
+            // Top Row: Status Icon & Status Badge Pill (Clean monochrome icon alignment, no neon boxes)
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(badgeColor.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = "Status Icon",
-                        tint = if (fsmState is BleFsmState.Disconnected) badgeTextColor else badgeColor,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "Status Icon",
+                    tint = if (fsmState is BleFsmState.Disconnected) badgeTextColor else badgeColor,
+                    modifier = Modifier.size(24.dp)
+                )
                 
                 // Status Badge Pill
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(20.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .background(badgeColor)
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
                         text = statusText,
@@ -146,7 +138,7 @@ fun ConnectionHeader(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = if (fsmState is BleFsmState.Connected) fsmState.device.address else "System Overview",
                     style = MaterialTheme.typography.bodyMedium,
@@ -171,9 +163,9 @@ fun ConnectionHeader(
                     
                     // RSSI Signal Meter Bars
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalAlignment = Alignment.Bottom,
-                        modifier = Modifier.height(24.dp)
+                        modifier = Modifier.height(20.dp)
                     ) {
                         val activeBars = when {
                             rssi > -60 -> 4
@@ -183,11 +175,11 @@ fun ConnectionHeader(
                         }
                         
                         for (i in 1..4) {
-                            val barHeight = (i * 6).dp
+                            val barHeight = (i * 5).dp
                             val isActive = i <= activeBars
                             Box(
                                 modifier = Modifier
-                                    .width(6.dp)
+                                    .width(4.dp)
                                     .height(barHeight)
                                     .clip(CircleShape)
                                     .background(if (isActive) badgeColor else MaterialTheme.colorScheme.surfaceVariant)
