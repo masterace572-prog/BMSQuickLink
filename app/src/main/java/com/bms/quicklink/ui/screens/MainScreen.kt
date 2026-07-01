@@ -16,6 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.bms.quicklink.ui.BmsViewModel
 import com.bms.quicklink.ui.components.ConfirmationDialog
 import kotlinx.coroutines.flow.collectLatest
@@ -32,6 +33,7 @@ fun MainScreen(
     viewModel: BmsViewModel,
     hasPermissions: Boolean,
     onRequestPermissions: () -> Unit,
+    navController: NavController,
     modifier: Modifier = Modifier
 ) {
     var selectedTab by remember { mutableStateOf(NavigationTab.CONTROLS) }
@@ -110,7 +112,8 @@ fun MainScreen(
                     onRequestPermissions = onRequestPermissions
                 )
                 NavigationTab.SETTINGS -> SettingsTab(
-                    viewModel = viewModel
+                    viewModel = viewModel,
+                    navController = navController
                 )
             }
         }

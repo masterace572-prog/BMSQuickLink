@@ -28,7 +28,7 @@ import androidx.core.content.ContextCompat
 import com.bms.quicklink.ui.BmsViewModel
 import com.bms.quicklink.ui.BmsViewModelFactory
 import com.bms.quicklink.ui.components.PermissionRationaleDialog
-import com.bms.quicklink.ui.screens.MainScreen
+import com.bms.quicklink.ui.navigation.AppNavigation
 import com.bms.quicklink.ui.theme.BMSQuickLinkTheme
 
 class MainActivity : ComponentActivity() {
@@ -120,7 +120,7 @@ class MainActivity : ComponentActivity() {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            MainScreen(
+            AppNavigation(
                 viewModel = viewModel,
                 hasPermissions = hasPermissions && isBluetoothEnabled,
                 onRequestPermissions = {

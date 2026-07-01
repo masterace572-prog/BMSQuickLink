@@ -30,6 +30,7 @@ class BmsRepository(
     val cardStyle: StateFlow<String> = prefsManager.cardStyle
     val verifyTimeoutMs: StateFlow<Long> = prefsManager.verifyTimeoutMs
     val isSimulationMode: StateFlow<Boolean> = prefsManager.isSimulationMode
+    val isOnboardingCompleted: StateFlow<Boolean> = prefsManager.isOnboardingCompleted
 
     val savedDevices: StateFlow<List<SavedDeviceEntity>> = dbHelper.savedDevicesFlow
     val auditLogs: StateFlow<List<AuditLogEntity>> = dbHelper.auditLogsFlow
@@ -83,6 +84,7 @@ class BmsRepository(
     fun setCardStyle(style: String) = prefsManager.setCardStyle(style)
     fun setVerifyTimeoutMs(timeoutMs: Long) = prefsManager.setVerifyTimeoutMs(timeoutMs)
     fun setSimulationMode(enabled: Boolean) = prefsManager.setSimulationMode(enabled)
+    fun setOnboardingCompleted(completed: Boolean) = prefsManager.setOnboardingCompleted(completed)
 
     fun addSavedDevice(nickname: String, address: String) = dbHelper.addSavedDevice(nickname, address)
     fun updateSavedDeviceNickname(address: String, newNickname: String) = dbHelper.updateSavedDeviceNickname(address, newNickname)
