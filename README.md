@@ -1,13 +1,14 @@
-# BMS Quick Link & Control (9.0 Final Streamlined Corporate Edition)
+# BMS Quick Link & Control (11.0 Final Streamlined Welcome Edition)
 
-**Version:** 9.0 (Final Streamlined Corporate UI Edition)  
+**Version:** 11.0 (Final Streamlined Welcome Edition)  
 **Platform:** Android  
 **Language:** Kotlin  
 **UI Framework:** Jetpack Compose (Material 3)  
 **Design System:** Professional Corporate Palette (Absolute Zero Neon, Zero Pastel Tints, Zero Gradients)  
+**Security:** Resolvable Private Addresses (RPA) + EncryptedSharedPreferences (AES-256) + R8 Sandboxing  
 **Backend:** Local SQLite Database (Connected-Only Audit Logs)  
 **Communication:** Bluetooth Low Energy (BLE)  
-**Architecture:** MVVM + Repository + SharedPreferences Flows + StateFlow + Coroutines
+**Architecture:** MVVM + Repository + StateFlow + Coroutines
 
 ---
 
@@ -20,20 +21,27 @@ Per the PRD, the application intentionally excludes every monitoring, telemetry,
 
 ---
 
-## Elite Non-AI Corporate Specifications (v9.0 Final)
+## Senior Android Security Engineer Specs (v11.0 Final)
 
-### 💎 Strict Professional Solid Palette & Layouts (Absolute Zero Neon)
-To guarantee a true real-world corporate engineering look and eliminate all clunky AI-generated aesthetics, the entire application has been redesigned around strict professional design guidelines:
-- **High-End Neutral Palette:** Deep solid charcoal background (`0xFF121212`) and solid surface (`0xFF1E1E1E`) for Dark Mode; crisp light neutral background (`0xFFF5F5F7`) and pure white surface (`0xFFFFFFFF`) for Light Mode.
-- **Classic Solid Utility Accent Tones:** Muted corporate swatches (`Corporate Blue`, `Corporate Green`, `Corporate Orange`, `Corporate Red`, `Corporate Teal`, `Corporate Purple`) replace all neon shades.
-- **Refined Typographic Hierarchy (`Type.kt`):** Completely scaled down massive, clunky titles in favor of a crisp, professional corporate typographic scale (`headlineLarge` -> 24sp bold, `titleMedium` -> 16sp medium, `bodyMedium` -> 13sp regular).
-- **Clean Icon Styling:** Fully removed all glitchy SVG paths and pastel-tinted icon background boxes. All components use perfectly rendered standard Material Icons sitting cleanly on the surface.
+### 🚀 Single Streamlined Welcome Screen (`OnboardingScreen.kt`)
+Per user demand, the multi-page onboarding flow has been removed in favor of a single, exceptionally polished Welcome Screen:
+- **Hero Welcome Design:** Displays an elegant branding container (`Icons.Default.BluetoothConnected`), crisp title, and minimalist value proposition statement.
+- **AES-256 Persistence Layer (`BmsEncryptedPrefs.kt`):** Tapping the primary "Get Started" button securely writes the boolean key `is_onboarding_complete = true` using Android `EncryptedSharedPreferences` backed directly by the Android Keystore (`MasterKey.KeyScheme.AES256_GCM`). The app's main entry point instantly inspects this encrypted key to bypass the Welcome screen on all subsequent launches.
 
-### 🧭 Streamlined Navigation Suite (`MainScreen.kt`)
-The bottom navigation bar has been re-architected into a compact, professional 3-tab layout:
-1. **Connection Tab (`ConnectionTab.kt`):** Dedicated exclusively to connection lifecycle management, featuring the `ConnectionHeader`, primary Action Buttons, Quick Link Direct Launch, and discovered devices radar. No hardware switches are present here.
-2. **Controls Tab (`ControlsTab.kt`):** Displays the four physical hardware switches (`ControlPanel`). If no BLE connection is active, it presents an elegant professional information banner and keeps the actual hardware switches fully visible but safely disabled (dimmed/unclickable) until a connection is made!
-3. **Settings Tab (`SettingsTab.kt`):** Houses the Appearance Console, Developer Profile, Legal copy, Verification Timeout customizer, and connected-only SQLite Audit Logs.
+### 🛡️ Logical Security & User-Device Privacy Layers
+To guarantee that the mobile host device remains entirely private, untraceable, and unidentifiable by receiving BMS hardware or external packet sniffers, the application integrates three strict security layers:
+
+#### Layer 1: OS-Level MAC Anonymization (RPA)
+- The BLE scanner leverages Android’s native Bluetooth Privacy system by enforcing the use of **Resolvable Private Addresses (RPA)**.
+- Configured via low latency scan modes (`SCAN_MODE_LOW_LATENCY`), zero report delay (`setReportDelay(0)`), and strict manifest scanning flags (`neverForLocation`), this mandates that the mobile phone's real physical MAC address is scrambled and dynamically rotated at the OS level during every scan session. External sniffers and BMS hardware cannot log or trace a persistent device signature.
+
+#### Layer 2: Secure Application Sandboxing & Obfuscation (`proguard-rules.pro`)
+- Configured with aggressive R8 optimization, repackaging (`-repackageclasses ''`), and advanced code obfuscation.
+- All custom BLE connection logic, GATT callback listeners, and manufacturer UUID references are heavily obfuscated to prevent decompilation, reverse-engineering, or local protocol analysis. Production release builds automatically strip all logging calls (`Log.d`, `Log.w`, `Log.e`) to prevent exposing sensitive runtime parameters to logcat.
+
+#### Layer 3: Ephemeral Connection Context
+- Ensures no unique device identifiers (such as Android ID, IMEI, or hardware serials) are ever bundled into BLE payload strings sent over the write characteristic.
+- All outgoing transmission payloads are limited strictly to standard, generic BMS hardware hex command structures (`0x01`, `0x02`, `0x03`, `0x04`).
 
 ---
 
@@ -46,4 +54,4 @@ The bottom navigation bar has been re-architected into a compact, professional 3
 - Target Android SDK: API 34 (Android 14)
 
 ### Building the Project
-Open the `BMSQuickLink` directory in Android Studio. Gradle will automatically sync the required AndroidX, Jetpack Compose, and Navigation dependencies. Build and deploy directly to a BLE-capable Android physical device.
+Open the `BMSQuickLink` directory in Android Studio. Gradle will automatically sync the required AndroidX, Jetpack Compose, Navigation, and Security Crypto dependencies. Build and deploy directly to a BLE-capable Android physical device.

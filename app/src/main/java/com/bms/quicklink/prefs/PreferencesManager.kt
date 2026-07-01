@@ -16,10 +16,10 @@ class PreferencesManager(context: Context) {
         private const val KEY_DEVELOPER_MODE = "key_developer_mode"
         private const val KEY_VERIFY_TIMEOUT = "key_verify_timeout"
         private const val KEY_SIMULATION_MODE = "key_simulation_mode"
-        private const val KEY_ONBOARDING_COMPLETED = "key_onboarding_completed"
     }
 
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val encryptedPrefs = BmsEncryptedPrefs(context)
 
     private val _themeMode = MutableStateFlow(prefs.getString(KEY_THEME_MODE, "DARK") ?: "DARK")
     val themeMode: StateFlow<String> = _themeMode
@@ -42,8 +42,8 @@ class PreferencesManager(context: Context) {
     private val _isSimulationMode = MutableStateFlow(prefs.getBoolean(KEY_SIMULATION_MODE, false))
     val isSimulationMode: StateFlow<Boolean> = _isSimulationMode
 
-    private val _isOnboardingCompleted = MutableStateFlow(prefs.getBoolean(KEY_ONBOARDING_COMPLETED, false))
-    val isOnboardingCompleted: StateFlow<Boolean> = _isOnboardingCompleted
+    // Secure Encrypted Persistence Layer for Onboarding State
+    val isOnboardingCompleted: StateFlow<Boolean> = encryptedPrefs.isOnboardingComplete
 
     fun setThemeMode(mode: String) {
         prefs.edit().putString(KEY_THEME_MODE, mode).apply()
@@ -81,7 +81,6 @@ class PreferencesManager(context: Context) {
     }
 
     fun setOnboardingCompleted(completed: Boolean) {
-        prefs.edit().putBoolean(KEY_ONBOARDING_COMPLETED, completed).apply()
-        _isOnboardingCompleted.value = completed
+        encryptedPrefs.setOnboardingComplete(completed)
     }
 }

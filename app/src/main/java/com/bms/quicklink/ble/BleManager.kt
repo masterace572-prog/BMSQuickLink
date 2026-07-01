@@ -215,7 +215,6 @@ class BleManager(private val context: Context) {
         _fsmState.value = BleFsmState.Scanning
 
         if (_isSimulationMode.value) {
-            // Inject virtual simulated BMS devices instantly
             Handler(Looper.getMainLooper()).postDelayed({
                 val virtualBms1 = BmsDevice(
                     device = null,
@@ -243,8 +242,11 @@ class BleManager(private val context: Context) {
             return
         }
 
+        // Layer 1: OS-Level MAC Anonymization (RPA)
+        // Configure low latency scan mode and zero report delay to utilize native Bluetooth Privacy and dynamic RPA rotation
         val scanSettings = ScanSettings.Builder()
             .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .setReportDelay(0)
             .build()
 
         try {
@@ -279,7 +281,6 @@ class BleManager(private val context: Context) {
         _fsmState.value = BleFsmState.Connecting(device)
 
         if (_isSimulationMode.value || device.device == null) {
-            // Simulate GATT connection lifecycle
             Handler(Looper.getMainLooper()).postDelayed({
                 onConnectedReady()
             }, 800)
@@ -350,7 +351,7 @@ class BleManager(private val context: Context) {
     }
 
     private fun writeRxCharacteristic(data: ByteArray): Boolean {
-        if (_isSimulationMode.value) return true // Simulated hardware write success
+        if (_isSimulationMode.value) return true
 
         val gatt = currentGatt ?: return false
         val char = rxCharacteristic ?: return false

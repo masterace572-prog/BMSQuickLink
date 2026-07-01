@@ -1,7 +1,27 @@
-# Add project specific ProGuard rules here.
-# By default, the flags in this file are appended to flags specified
-# in "proguard-android-optimize.txt". You can edit the include path and
-# order by changing the proguardFiles directive in build.gradle.kts.
+# Layer 2: Secure Application Sandboxing & Advanced R8 Code Obfuscation
+-repackageclasses ''
+-allowaccessmodification
+-optimizations !code/simplification/arithmetic,!code/simplification/cast,!field/*,!class/merging/*
 
--keep class com.bms.quicklink.** { *; }
+-keepattributes SourceFile,LineNumberTable
+-keep class com.bms.quicklink.MainActivity { *; }
+-keep class com.bms.quicklink.MainApplication { *; }
+
+# Heavily obfuscate custom BLE connection logic, callback listeners, and manufacturer UUID references
+-keep,allowobfuscation class com.bms.quicklink.ble.** { *; }
+-keep,allowobfuscation class com.bms.quicklink.data.SwitchType { *; }
+-keep,allowobfuscation class com.bms.quicklink.data.SwitchState { *; }
+-keep,allowobfuscation class com.bms.quicklink.data.BmsRepository { *; }
+
+# Prevent logging of sensitive connection details or hardware signatures in production releases
+-assumenosideeffects class android.util.Log {
+    public static boolean isLoggable(java.lang.String, int);
+    public static int v(...);
+    public static int i(...);
+    public static int w(...);
+    public static int d(...);
+    public static int e(...);
+}
+
 -dontwarn com.bms.quicklink.**
+-dontwarn androidx.security.crypto.**
