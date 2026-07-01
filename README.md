@@ -1,10 +1,10 @@
-# BMS Quick Link & Control (12.0 Final Premium Pager Edition)
+# BMS Quick Link & Control (13.0 Ultimate Floating Masterpiece Edition)
 
-**Version:** 12.0 (Final Premium Welcome Pager Edition)  
+**Version:** 13.0 (Ultimate Floating Masterpiece Edition)  
 **Platform:** Android  
 **Language:** Kotlin  
 **UI Framework:** Jetpack Compose (Material 3)  
-**Design System:** Professional Corporate Palette (Absolute Zero Neon, Zero Pastel Tints, Zero Gradients)  
+**Design System:** Masterpiece Floating Dock + Real-Time Customization Engine (Themes, Palettes, Card/Corner Styles)  
 **Security:** Resolvable Private Addresses (RPA) + EncryptedSharedPreferences (AES-256) + R8 Sandboxing  
 **Backend:** Local SQLite Database (Connected-Only Audit Logs)  
 **Communication:** Bluetooth Low Energy (BLE)  
@@ -21,28 +21,27 @@ Per the PRD, the application intentionally excludes every monitoring, telemetry,
 
 ---
 
-## Senior Android Security Engineer Specs (v12.0 Final)
+## Ultimate Masterpiece Specs (v13.0 Final)
 
-### 🚀 Premium 2-Screen Welcome Wizard (`OnboardingScreen.kt`)
-Designed around a highly elegant, user-friendly `HorizontalPager` flow:
-- **Screen 1: Welcome Screen** — Displays a beautiful hero greeting, prominent app branding (`Icons.Default.BluetoothConnected`), and an explicit **"Continue"** button. Tapping "Continue" smoothly slides the pager to the second screen.
-- **Screen 2: Features Showcase** — Highlights the core functionalities (Secure BLE Link, Quick Hardware Controls: Charge, Discharge, Auto-Balance, Heating) with crisp monochrome icons and short text descriptions, followed by an explicit **"Get Started"** trigger.
-- **AES-256 Persistence Layer (`BmsEncryptedPrefs.kt`):** Tapping "Get Started" securely writes the boolean key `is_onboarding_complete = true` using Android `EncryptedSharedPreferences` backed directly by the Android Keystore (`MasterKey.KeyScheme.AES256_GCM`). The app's main entry point instantly inspects this encrypted key to bypass the Welcome wizard on all subsequent launches.
+### 🌟 Jaw-Dropping UI/UX Design System
+To deliver a world-class, ultra-premium experience that feels like a flagship tech/corporate dashboard, the entire application has been transformed with cutting-edge visual design:
+- **Spectacular Floating Navigation Dock (`MainScreen.kt`):** Transformed the standard bottom navigation bar into a spectacularly modern floating dock (modeled after the latest high-end dynamic interfaces). It hovers elegantly above the background with `RoundedCornerShape(36.dp)`, custom pill indicator highlights, and soft natural drop shadows.
+- **Jaw-Dropping Connection Dashboard (`ConnectionHeader.kt`):** A masterpiece header card featuring a large 64dp dedicated square icon container, prominent MAC address presentation, and an explicit live RSSI signal meter bar (representing physical connection strength via 4 clean vertical pill bars).
+- **Left Accent Indicator Bars (`ControlPanel.kt`):** Hardware switches now feature an elegant 6dp left accent indicator bar, explicit status tags (`ACTIVE` / `OFF`), and custom animated content expansion.
+- **View-Only Dimmed Controls (`ControlsTab.kt`):** When disconnected, the app keeps the actual control switches fully visible in a beautifully dimmed, unclickable view-only mode accompanied by an elegant professional info banner.
+- **High-End 2-Screen Welcome Wizard (`OnboardingScreen.kt`):** An intuitive sliding `HorizontalPager` flow featuring a 110dp branding container (`Icons.Default.BluetoothConnected`), animated indicator dots, and dynamic action buttons ("Continue" on Page 1 sliding to Page 2, "Get Started" on Page 2).
 
-### 🛡️ Logical Security & User-Device Privacy Layers
-To guarantee that the mobile host device remains entirely private, untraceable, and unidentifiable by receiving BMS hardware or external packet sniffers, the application integrates three strict security layers:
-
-#### Layer 1: OS-Level MAC Anonymization (RPA)
-- The BLE scanner leverages Android’s native Bluetooth Privacy system by enforcing the use of **Resolvable Private Addresses (RPA)**.
-- Configured via low latency scan modes (`SCAN_MODE_LOW_LATENCY`), zero report delay (`setReportDelay(0)`), and strict manifest scanning flags (`neverForLocation`), this mandates that the mobile phone's real physical MAC address is scrambled and dynamically rotated at the OS level during every scan session. External sniffers and BMS hardware cannot log or trace a persistent device signature.
-
-#### Layer 2: Secure Application Sandboxing & Obfuscation (`proguard-rules.pro`)
-- Configured with aggressive R8 optimization, repackaging (`-repackageclasses ''`), and advanced code obfuscation.
-- All custom BLE connection logic, GATT callback listeners, and manufacturer UUID references are heavily obfuscated to prevent decompilation, reverse-engineering, or local protocol analysis. Production release builds automatically strip all logging calls (`Log.d`, `Log.w`, `Log.e`) to prevent exposing sensitive runtime parameters to logcat.
-
-#### Layer 3: Ephemeral Connection Context
-- Ensures no unique device identifiers (such as Android ID, IMEI, or hardware serials) are ever bundled into BLE payload strings sent over the write characteristic.
-- All outgoing transmission payloads are limited strictly to standard, generic BMS hardware hex command structures (`0x01`, `0x02`, `0x03`, `0x04`).
+### 🎨 Fully Functional Real-Time Appearance Console (`AppearanceScreen.kt`, `Theme.kt`)
+Accessible instantly in the Settings screen, the Appearance Console provides full-featured, highly intuitive customization that instantly re-themes the entire application in real-time:
+- **3-Way Theme Mode Selection:** Easily toggle between **Dark Mode**, **Light Mode**, and **System Default**.
+- **Dynamic Accent Swatch Palette:** Instantly change the app's solid accent color across active switches, primary buttons, floating navigation indicators, and badge pills. Choose from an elite palette of 6 striking pairings: `Corporate Blue`, `Corporate Green`, `Corporate Orange`, `Corporate Red`, `Corporate Teal`, and `Corporate Purple`.
+- **3-Way Card Style Engine (`LocalCardStyle`):** Change the architectural appearance of cards across the entire application instantly (`Solid Clean`, `Border Outlined`, `Translucent`).
+- **3-Way Card Corner Style Engine (`LocalCornerStyle`):** Adjust the physical corner rounding of cards across the entire app instantly (`Classic`, `Sharp`, `Soft`).
+- **Corporate Footer (`SettingsTab.kt`):** Features a clean, professional app footer text centered beautifully above the floating navigation dock:
+  ```text
+  BMS Quick Link & Control v12.0
+  Developed by Anoy
+  ```
 
 ---
 

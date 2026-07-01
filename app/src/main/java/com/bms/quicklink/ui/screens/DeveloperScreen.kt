@@ -37,9 +37,9 @@ fun DeveloperScreen(
     val cardStyle = LocalCardStyle.current
     val cornerStyle = LocalCornerStyle.current
     val cardRadius = when (cornerStyle) {
-        "SHARP" -> 4.dp
-        "SOFT" -> 20.dp
-        else -> 12.dp
+        "SHARP" -> 8.dp
+        "SOFT" -> 28.dp
+        else -> 20.dp
     }
 
     val cardBg = when (cardStyle) {
@@ -70,8 +70,8 @@ fun DeveloperScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(horizontal = 24.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             item {
                 // Main Profile Card
@@ -84,17 +84,25 @@ fun DeveloperScreen(
                 ) {
                     Row(
                         modifier = Modifier
-                            .padding(20.dp)
+                            .padding(24.dp)
                             .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(imageVector = Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(36.dp))
-                        Spacer(modifier = Modifier.width(20.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(72.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                                .background(MaterialTheme.colorScheme.primaryContainer),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(imageVector = Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(36.dp))
+                        }
+                        Spacer(modifier = Modifier.width(24.dp))
                         Column(modifier = Modifier.weight(1f)) {
-                            Text(text = "Anoy", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(text = "Arjun (Age 18)", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(text = "Anoy", style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.onSurface)
+                            Spacer(modifier = Modifier.height(3.dp))
+                            Text(text = "Arjun (Age 18)", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            Spacer(modifier = Modifier.height(6.dp))
                             Text(text = "Creator & Lead Developer of BMS Quick Link & Control", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f))
                         }
                     }
@@ -102,7 +110,7 @@ fun DeveloperScreen(
             }
 
             item {
-                Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 2.dp))
+                Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 4.dp))
             }
 
             item {
@@ -202,19 +210,27 @@ private fun SocialHandleCard(
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(24.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(imageVector = icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
-            Spacer(modifier = Modifier.width(16.dp))
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(imageVector = icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(28.dp))
+            }
+            Spacer(modifier = Modifier.width(20.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(text = title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)
-                Spacer(modifier = Modifier.height(2.dp))
+                Text(text = title, style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
+                Spacer(modifier = Modifier.height(3.dp))
                 Text(text = handle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-            Spacer(modifier = Modifier.width(12.dp))
-            Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Open", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(18.dp))
+            Spacer(modifier = Modifier.width(16.dp))
+            Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Open", tint = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(22.dp))
         }
     }
 }

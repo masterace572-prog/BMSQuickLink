@@ -49,7 +49,6 @@ fun OnboardingScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Horizontal Pager for Welcome and Features Showcase
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
@@ -124,8 +123,7 @@ private fun WelcomeScreenContent() {
             modifier = Modifier
                 .size(110.dp)
                 .clip(RoundedCornerShape(28.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), RoundedCornerShape(28.dp)),
+                .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -194,7 +192,15 @@ private fun FeatureItem(title: String, description: String, icon: androidx.compo
             .fillMaxWidth()
             .padding(horizontal = 8.dp)
     ) {
-        Icon(imageVector = icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(imageVector = icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
+        }
         Spacer(modifier = Modifier.width(16.dp))
         Column {
             Text(text = title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onSurface)

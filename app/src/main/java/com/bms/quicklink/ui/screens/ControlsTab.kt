@@ -35,9 +35,9 @@ fun ControlsTab(
     val cardStyle = LocalCardStyle.current
     val cornerStyle = LocalCornerStyle.current
     val cardRadius = when (cornerStyle) {
-        "SHARP" -> 4.dp
-        "SOFT" -> 20.dp
-        else -> 12.dp
+        "SHARP" -> 8.dp
+        "SOFT" -> 28.dp
+        else -> 20.dp
     }
 
     val isConnected = fsmState is BleFsmState.Connected
@@ -46,8 +46,8 @@ fun ControlsTab(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(horizontal = 24.dp, vertical = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         // App Title & Simulation Mode Badge
         Row(
@@ -64,10 +64,10 @@ fun ControlsTab(
             if (isSimulationMode) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
                         text = "DEMO MODE",
@@ -100,7 +100,7 @@ fun ControlsTab(
             ) {
                 Row(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(20.dp)
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -108,13 +108,13 @@ fun ControlsTab(
                         imageVector = Icons.Default.Info,
                         contentDescription = "Info",
                         tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(28.dp)
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width(18.dp))
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
                             text = "Switches Disabled",
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(2.dp))
@@ -128,7 +128,7 @@ fun ControlsTab(
             }
         }
 
-        // Control Panel
+        // Control Panel (Always visible, switches dynamically enable/disable based on connection state)
         ControlPanel(
             isConnected = isConnected,
             switchState = switchState,

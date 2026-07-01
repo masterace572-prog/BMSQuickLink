@@ -29,9 +29,9 @@ fun ConnectionHeader(
     val cardStyle = LocalCardStyle.current
     val cornerStyle = LocalCornerStyle.current
     val cardRadius = when (cornerStyle) {
-        "SHARP" -> 4.dp
-        "SOFT" -> 20.dp
-        else -> 12.dp
+        "SHARP" -> 8.dp
+        "SOFT" -> 28.dp
+        else -> 20.dp
     }
 
     val (statusText, deviceName, rssi, baseBgColor, contentColor, icon, badgeColor, badgeTextColor) = when (fsmState) {
@@ -105,29 +105,37 @@ fun ConnectionHeader(
     ) {
         Column(
             modifier = Modifier
-                .padding(20.dp)
+                .padding(24.dp)
                 .fillMaxWidth(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Top Row: Status Icon & Status Badge Pill
+            // Top Row: Large Dedicated Icon Container & Status Badge Pill
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = "Status Icon",
-                    tint = if (fsmState is BleFsmState.Disconnected) badgeTextColor else badgeColor,
-                    modifier = Modifier.size(24.dp)
-                )
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(22.dp))
+                        .background(badgeColor.copy(alpha = 0.15f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = "Status Icon",
+                        tint = if (fsmState is BleFsmState.Disconnected) badgeTextColor else badgeColor,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
                 
                 // Status Badge Pill
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(badgeColor)
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     Text(
                         text = statusText,
@@ -141,14 +149,14 @@ fun ConnectionHeader(
             Column(modifier = Modifier.fillMaxWidth()) {
                 Text(
                     text = deviceName,
-                    style = MaterialTheme.typography.headlineMedium,
+                    style = MaterialTheme.typography.headlineLarge,
                     color = contentColor,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = if (fsmState is BleFsmState.Connected) fsmState.device.address else "System Overview",
+                    text = if (fsmState is BleFsmState.Connected) fsmState.device.address else "Hardware Connection Overview",
                     style = MaterialTheme.typography.bodyMedium,
                     color = contentColor.copy(alpha = 0.6f),
                     maxLines = 1,
@@ -169,11 +177,11 @@ fun ConnectionHeader(
                         Text("$rssi dBm", style = MaterialTheme.typography.labelLarge, color = badgeColor)
                     }
                     
-                    // RSSI Signal Meter Bars
+                    // Live RSSI Signal Meter Bars
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
                         verticalAlignment = Alignment.Bottom,
-                        modifier = Modifier.height(20.dp)
+                        modifier = Modifier.height(24.dp)
                     ) {
                         val activeBars = when {
                             rssi > -60 -> 4
@@ -183,11 +191,11 @@ fun ConnectionHeader(
                         }
                         
                         for (i in 1..4) {
-                            val barHeight = (i * 5).dp
+                            val barHeight = (i * 6).dp
                             val isActive = i <= activeBars
                             Box(
                                 modifier = Modifier
-                                    .width(4.dp)
+                                    .width(6.dp)
                                     .height(barHeight)
                                     .clip(CircleShape)
                                     .background(if (isActive) badgeColor else MaterialTheme.colorScheme.surfaceVariant)

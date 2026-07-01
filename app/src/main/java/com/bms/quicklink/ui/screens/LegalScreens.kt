@@ -24,9 +24,9 @@ fun TermsScreen(
     val cardStyle = LocalCardStyle.current
     val cornerStyle = LocalCornerStyle.current
     val cardRadius = when (cornerStyle) {
-        "SHARP" -> 4.dp
-        "SOFT" -> 20.dp
-        else -> 12.dp
+        "SHARP" -> 8.dp
+        "SOFT" -> 28.dp
+        else -> 20.dp
     }
 
     val cardBg = when (cardStyle) {
@@ -58,8 +58,8 @@ fun TermsScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(horizontal = 24.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             Text(text = "Terms & Conditions of Use", style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.onBackground)
 
@@ -70,16 +70,16 @@ fun TermsScreen(
                     .fillMaxWidth()
                     .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(cardRadius))
             ) {
-                Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Column(modifier = Modifier.padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text("1. Exclusive BLE Purpose", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
                     Text("BMS Quick Link & Control is a specialized Bluetooth Low Energy utility developed to establish a stable, safe hardware link with compatible LiFePO4 Battery Management Systems.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), modifier = Modifier.padding(vertical = 2.dp))
+                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), modifier = Modifier.padding(vertical = 4.dp))
 
                     Text("2. Excluded Features", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
                     Text("The application intentionally excludes every form of battery telemetry, graphing, analytics, historical logging, voltage charts, firmware update, or account cloud synchronization to ensure maximum security and simplicity.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), modifier = Modifier.padding(vertical = 2.dp))
+                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), modifier = Modifier.padding(vertical = 4.dp))
 
                     Text("3. Hardware Safety & Verification", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
                     Text("By utilizing this application to toggle physical MOSFET switches, you acknowledge that every command requires explicit user confirmation. The developer assumes no liability for hardware damage resulting from physical battery disconnection.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -100,9 +100,9 @@ fun PrivacyScreen(
     val cardStyle = LocalCardStyle.current
     val cornerStyle = LocalCornerStyle.current
     val cardRadius = when (cornerStyle) {
-        "SHARP" -> 4.dp
-        "SOFT" -> 20.dp
-        else -> 12.dp
+        "SHARP" -> 8.dp
+        "SOFT" -> 28.dp
+        else -> 20.dp
     }
 
     val cardBg = when (cardStyle) {
@@ -134,8 +134,8 @@ fun PrivacyScreen(
                 .padding(innerPadding)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(horizontal = 24.dp, vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             Text(text = "Absolute Offline Privacy", style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.onBackground)
 
@@ -146,16 +146,16 @@ fun PrivacyScreen(
                     .fillMaxWidth()
                     .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(cardRadius))
             ) {
-                Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Column(modifier = Modifier.padding(28.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text("1. Zero Internet Permissions", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
                     Text("BMS Quick Link & Control explicitly omits the Android INTERNET permission from its core manifest. Your device never connects to any external network or server.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), modifier = Modifier.padding(vertical = 2.dp))
+                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), modifier = Modifier.padding(vertical = 4.dp))
 
                     Text("2. Zero Analytics & Tracking", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
                     Text("No telemetry, crash analytics, user behavior tracking, or background location harvesting exists anywhere within the application code.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
-                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), modifier = Modifier.padding(vertical = 2.dp))
+                    Divider(color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), modifier = Modifier.padding(vertical = 4.dp))
 
                     Text("3. Local Storage Only", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
                     Text("All saved BMS profiles and hardware audit logs are stored strictly inside a local, private SQLite database on your device. You can clear this data at any time in Settings.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)

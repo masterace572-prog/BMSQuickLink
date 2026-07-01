@@ -33,7 +33,7 @@ fun ControlPanel(
 ) {
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(14.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
             text = "Hardware Switch Panel",
@@ -107,8 +107,8 @@ private fun ControlCard(
     val cornerStyle = LocalCornerStyle.current
     val cardRadius = when (cornerStyle) {
         "SHARP" -> 4.dp
-        "SOFT" -> 20.dp
-        else -> 12.dp
+        "SOFT" -> 24.dp
+        else -> 16.dp
     }
 
     val cardBg = when (cardStyle) {
@@ -117,6 +117,7 @@ private fun ControlCard(
         else -> MaterialTheme.colorScheme.surface.copy(alpha = if (isEnabled) 1.0f else 0.6f)
     }
 
+    val iconBg = if (isChecked && isEnabled) activeTint.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant
     val iconColor = if (isChecked && isEnabled) activeTint else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (isEnabled) 1.0f else 0.4f)
     val titleColor = if (isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
     val subtitleColor = if (isEnabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
@@ -140,29 +141,37 @@ private fun ControlCard(
             // Left Accent Bar Indicator
             Box(
                 modifier = Modifier
-                    .width(4.dp)
+                    .width(6.dp)
                     .fillMaxHeight()
                     .background(accentBarColor)
             )
 
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .padding(20.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = title,
-                    tint = iconColor,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .clip(RoundedCornerShape(18.dp))
+                        .background(iconBg),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = title,
+                        tint = iconColor,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+                Spacer(modifier = Modifier.width(20.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = title,
-                            style = MaterialTheme.typography.titleMedium,
+                            style = MaterialTheme.typography.titleLarge,
                             color = titleColor,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
@@ -170,9 +179,9 @@ private fun ControlCard(
                         if (isEnabled && !isPending) {
                             Box(
                                 modifier = Modifier
-                                    .clip(RoundedCornerShape(6.dp))
+                                    .clip(RoundedCornerShape(8.dp))
                                     .background(if (isChecked) activeTint.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surfaceVariant)
-                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                                    .padding(horizontal = 8.dp, vertical = 2.dp)
                             ) {
                                 Text(
                                     text = if (isChecked) "ACTIVE" else "OFF",
@@ -182,7 +191,7 @@ private fun ControlCard(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text = subtitle,
                         style = MaterialTheme.typography.bodyMedium,
@@ -191,11 +200,11 @@ private fun ControlCard(
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(16.dp))
                 if (isPending) {
                     CircularProgressIndicator(
-                        modifier = Modifier.size(24.dp),
-                        strokeWidth = 2.dp,
+                        modifier = Modifier.size(28.dp),
+                        strokeWidth = 2.5.dp,
                         color = activeTint
                     )
                 } else {

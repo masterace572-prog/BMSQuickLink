@@ -40,17 +40,17 @@ fun ConnectionTab(
     val cardStyle = LocalCardStyle.current
     val cornerStyle = LocalCornerStyle.current
     val cardRadius = when (cornerStyle) {
-        "SHARP" -> 4.dp
-        "SOFT" -> 20.dp
-        else -> 12.dp
+        "SHARP" -> 8.dp
+        "SOFT" -> 28.dp
+        else -> 20.dp
     }
 
     Column(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(horizontal = 24.dp, vertical = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         // App Title & Simulation Mode Badge
         Row(
@@ -67,10 +67,10 @@ fun ConnectionTab(
             if (isSimulationMode) {
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
                         text = "DEMO MODE",
@@ -100,55 +100,55 @@ fun ConnectionTab(
                                 onRequestPermissions()
                             }
                         },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
                     ) {
-                        Icon(imageVector = Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Icon(imageVector = Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(22.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(text = if (isSimulationMode) "Scan Virtual BMS" else "Start Scan", style = MaterialTheme.typography.titleMedium)
                     }
                 }
                 is BleFsmState.Scanning -> {
                     Button(
                         onClick = { viewModel.onStopScanTapped() },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
                     ) {
-                        Icon(imageVector = Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Icon(imageVector = Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(22.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(text = "Stop Scan", style = MaterialTheme.typography.titleMedium)
                     }
                 }
                 is BleFsmState.Connecting -> {
                     Button(
                         onClick = { viewModel.onDisconnectTapped() },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
                     ) {
                         CircularProgressIndicator(
-                            modifier = Modifier.size(18.dp),
-                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.5.dp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(text = "Cancel Connection", style = MaterialTheme.typography.titleMedium)
                     }
                 }
                 is BleFsmState.Connected -> {
                     Button(
                         onClick = { viewModel.onDisconnectTapped() },
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 14.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp)
                     ) {
-                        Icon(imageVector = Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(20.dp))
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Icon(imageVector = Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(22.dp))
+                        Spacer(modifier = Modifier.width(12.dp))
                         Text(text = "Disconnect", style = MaterialTheme.typography.titleMedium)
                     }
                 }
@@ -175,7 +175,7 @@ fun ConnectionTab(
                     .fillMaxWidth()
                     .border(if (cardStyle == "FILLED") 0.dp else 1.dp, directBorder, RoundedCornerShape(cardRadius))
             ) {
-                Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(
                         text = "Quick Link Direct Launch",
                         style = MaterialTheme.typography.titleLarge,
@@ -192,7 +192,7 @@ fun ConnectionTab(
                         label = { Text("Bluetooth MAC Address") },
                         placeholder = { Text("00:11:22:33:44:55") },
                         singleLine = true,
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth()
                     )
                     Button(
@@ -204,9 +204,9 @@ fun ConnectionTab(
                             }
                         },
                         enabled = customMacAddress.isNotBlank(),
-                        shape = RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(12.dp),
                         modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 12.dp)
+                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
                     ) {
                         Text(text = "Direct Connect", style = MaterialTheme.typography.titleMedium)
                         Spacer(modifier = Modifier.width(8.dp))

@@ -30,9 +30,9 @@ fun DeviceListCard(
     val cardStyle = LocalCardStyle.current
     val cornerStyle = LocalCornerStyle.current
     val cardRadius = when (cornerStyle) {
-        "SHARP" -> 4.dp
-        "SOFT" -> 20.dp
-        else -> 12.dp
+        "SHARP" -> 8.dp
+        "SOFT" -> 28.dp
+        else -> 20.dp
     }
 
     val cardBg = when (cardStyle) {
@@ -53,7 +53,7 @@ fun DeviceListCard(
             .fillMaxWidth()
             .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(cardRadius))
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(24.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
@@ -66,9 +66,9 @@ fun DeviceListCard(
                 )
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(12.dp))
                         .background(MaterialTheme.colorScheme.primaryContainer)
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
                         text = "${devices.size} Found",
@@ -77,12 +77,12 @@ fun DeviceListCard(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
             if (devices.isEmpty()) {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 12.dp),
+                        .padding(vertical = 16.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -93,8 +93,8 @@ fun DeviceListCard(
                 }
             } else {
                 LazyColumn(
-                    modifier = Modifier.heightIn(max = 320.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                    modifier = Modifier.heightIn(max = 340.dp),
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     items(devices, key = { it.address }) { device ->
                         DeviceItem(device = device, onConnect = { onConnectTapped(device) })
@@ -114,8 +114,8 @@ private fun DeviceItem(
     val cornerStyle = LocalCornerStyle.current
     val itemRadius = when (cornerStyle) {
         "SHARP" -> 4.dp
-        "SOFT" -> 20.dp
-        else -> 12.dp
+        "SOFT" -> 24.dp
+        else -> 16.dp
     }
 
     val itemBg = when (cardStyle) {
@@ -139,24 +139,32 @@ private fun DeviceItem(
     ) {
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(18.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Default.Bluetooth,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(24.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Bluetooth,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = device.name,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onSurface
                 )
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(3.dp))
                 Text(
                     text = device.address,
                     style = MaterialTheme.typography.bodyMedium,
@@ -170,15 +178,15 @@ private fun DeviceItem(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = onConnect,
-                    shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)
                 ) {
                     Text(text = "Connect", style = MaterialTheme.typography.labelLarge)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(14.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(16.dp))
                 }
             }
         }
