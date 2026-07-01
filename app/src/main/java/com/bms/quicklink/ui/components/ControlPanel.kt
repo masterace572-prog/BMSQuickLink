@@ -104,15 +104,15 @@ private fun ControlCard(
 ) {
     val cardStyle = LocalCardStyle.current
     val cardBg = when (cardStyle) {
-        "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+        "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = if (isEnabled) 0.35f else 0.2f)
         "OUTLINED" -> Color.Transparent
-        else -> MaterialTheme.colorScheme.surface
+        else -> MaterialTheme.colorScheme.surface.copy(alpha = if (isEnabled) 1.0f else 0.6f)
     }
 
-    val iconColor = if (isChecked && isEnabled) activeTint else MaterialTheme.colorScheme.onSurfaceVariant
-    val titleColor = if (isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-    val subtitleColor = if (isEnabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
-    val borderColor = if (isChecked && isEnabled) activeTint.copy(alpha = 0.4f) else if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline
+    val iconColor = if (isChecked && isEnabled) activeTint else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = if (isEnabled) 1.0f else 0.4f)
+    val titleColor = if (isEnabled) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+    val subtitleColor = if (isEnabled) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+    val borderColor = if (isChecked && isEnabled) activeTint.copy(alpha = 0.4f) else if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline.copy(alpha = if (isEnabled) 1.0f else 0.4f)
     val accentBarColor = if (isChecked && isEnabled) activeTint else Color.Transparent
 
     Card(
@@ -200,7 +200,11 @@ private fun ControlCard(
                             checkedThumbColor = activeTint,
                             checkedTrackColor = activeTint.copy(alpha = 0.2f),
                             uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant,
+                            disabledCheckedThumbColor = activeTint.copy(alpha = 0.4f),
+                            disabledCheckedTrackColor = activeTint.copy(alpha = 0.1f),
+                            disabledUncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                            disabledUncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
                         )
                     )
                 }

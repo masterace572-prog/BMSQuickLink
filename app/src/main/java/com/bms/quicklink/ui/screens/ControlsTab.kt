@@ -8,15 +8,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.ble.BleFsmState
 import com.bms.quicklink.ui.BmsViewModel
@@ -34,6 +32,8 @@ fun ControlsTab(
     val switchState by viewModel.switchState.collectAsState()
     val isSimulationMode by viewModel.isSimulationMode.collectAsState()
     val cardStyle = LocalCardStyle.current
+
+    val isConnected = fsmState is BleFsmState.Connected
 
     Column(
         modifier = modifier
@@ -71,56 +71,62 @@ fun ControlsTab(
             }
         }
 
-        if (fsmState !is BleFsmState.Connected) {
-            // Elegant Professional Empty State
-            val emptyBg = when (cardStyle) {
+        // Elegant Disconnected Info Banner
+        AnimatedVisibility(
+            visible = !isConnected,
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut() + shrinkVertically()
+        ) {
+            val bannerBg = when (cardStyle) {
                 "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
                 "OUTLINED" -> Color.Transparent
-                else -> MaterialTheme.colorScheme.surface
+                else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
             }
-            val emptyBorder = if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline
+            val bannerBorder = if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline
 
             Card(
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = emptyBg),
+                colors = CardDefaults.cardColors(containerColor = bannerBg),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, emptyBorder, RoundedCornerShape(12.dp))
+                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, bannerBorder, RoundedCornerShape(12.dp))
             ) {
-                Column(
+                Row(
                     modifier = Modifier
-                        .padding(24.dp)
+                        .padding(16.dp)
                         .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Lock,
-                        contentDescription = "Locked",
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.size(40.dp)
+                        imageVector = Icons.Default.Info,
+                        contentDescription = "Info",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(24.dp)
                     )
-                    Text(
-                        text = "Controls Locked",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "Please establish a BLE connection in the Connection tab to unlock hardware controls.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
-                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Switches Disabled",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Hardware switches are locked in view-only mode. Please connect to a BMS device in the Connection tab to unlock controls.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
-        } else {
-            // Control Panel
-            ControlPanel(
-                isConnected = true,
-                switchState = switchState,
-                onSwitchToggled = viewModel::onSwitchToggled
-            )
         }
+
+        // Control Panel (Always visible, switches dynamically enable/disable based on connection state)
+        ControlPanel(
+            isConnected = isConnected,
+            switchState = switchState,
+            onSwitchToggled = viewModel::onSwitchToggled
+        )
 
         Spacer(modifier = Modifier.height(110.dp))
     }

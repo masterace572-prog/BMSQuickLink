@@ -1,6 +1,6 @@
-# BMS Quick Link & Control (8.0 Final Professional Corporate Edition)
+# BMS Quick Link & Control (9.0 Final Streamlined Corporate Edition)
 
-**Version:** 8.0 (Final Professional Corporate Edition)  
+**Version:** 9.0 (Final Streamlined Corporate UI Edition)  
 **Platform:** Android  
 **Language:** Kotlin  
 **UI Framework:** Jetpack Compose (Material 3)  
@@ -20,7 +20,7 @@ Per the PRD, the application intentionally excludes every monitoring, telemetry,
 
 ---
 
-## Elite Non-AI Corporate Specifications (v8.0 Final)
+## Elite Non-AI Corporate Specifications (v9.0 Final)
 
 ### 💎 Strict Professional Solid Palette & Layouts (Absolute Zero Neon)
 To guarantee a true real-world corporate engineering look and eliminate all clunky AI-generated aesthetics, the entire application has been redesigned around strict professional design guidelines:
@@ -32,7 +32,7 @@ To guarantee a true real-world corporate engineering look and eliminate all clun
 ### 🧭 Streamlined Navigation Suite (`MainScreen.kt`)
 The bottom navigation bar has been re-architected into a compact, professional 3-tab layout:
 1. **Connection Tab (`ConnectionTab.kt`):** Dedicated exclusively to connection lifecycle management, featuring the `ConnectionHeader`, primary Action Buttons, Quick Link Direct Launch, and discovered devices radar. No hardware switches are present here.
-2. **Controls Tab (`ControlsTab.kt`):** Dedicated exclusively to hardware controls (`ControlPanel`). If no BLE connection is active, it presents an elegant professional empty state locking the switches.
+2. **Controls Tab (`ControlsTab.kt`):** Displays the four physical hardware switches (`ControlPanel`). If no BLE connection is active, it presents an elegant professional information banner and keeps the actual hardware switches fully visible but safely disabled (dimmed/unclickable) until a connection is made!
 3. **Settings Tab (`SettingsTab.kt`):** Houses the Appearance Console, Developer Profile, Legal copy, Verification Timeout customizer, and connected-only SQLite Audit Logs.
 
 ---
