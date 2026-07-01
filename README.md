@@ -1,6 +1,6 @@
-# BMS Quick Link & Control (11.0 Final Streamlined Welcome Edition)
+# BMS Quick Link & Control (12.0 Final Premium Pager Edition)
 
-**Version:** 11.0 (Final Streamlined Welcome Edition)  
+**Version:** 12.0 (Final Premium Welcome Pager Edition)  
 **Platform:** Android  
 **Language:** Kotlin  
 **UI Framework:** Jetpack Compose (Material 3)  
@@ -21,12 +21,13 @@ Per the PRD, the application intentionally excludes every monitoring, telemetry,
 
 ---
 
-## Senior Android Security Engineer Specs (v11.0 Final)
+## Senior Android Security Engineer Specs (v12.0 Final)
 
-### 🚀 Single Streamlined Welcome Screen (`OnboardingScreen.kt`)
-Per user demand, the multi-page onboarding flow has been removed in favor of a single, exceptionally polished Welcome Screen:
-- **Hero Welcome Design:** Displays an elegant branding container (`Icons.Default.BluetoothConnected`), crisp title, and minimalist value proposition statement.
-- **AES-256 Persistence Layer (`BmsEncryptedPrefs.kt`):** Tapping the primary "Get Started" button securely writes the boolean key `is_onboarding_complete = true` using Android `EncryptedSharedPreferences` backed directly by the Android Keystore (`MasterKey.KeyScheme.AES256_GCM`). The app's main entry point instantly inspects this encrypted key to bypass the Welcome screen on all subsequent launches.
+### 🚀 Premium 2-Screen Welcome Wizard (`OnboardingScreen.kt`)
+Designed around a highly elegant, user-friendly `HorizontalPager` flow:
+- **Screen 1: Welcome Screen** — Displays a beautiful hero greeting, prominent app branding (`Icons.Default.BluetoothConnected`), and an explicit **"Continue"** button. Tapping "Continue" smoothly slides the pager to the second screen.
+- **Screen 2: Features Showcase** — Highlights the core functionalities (Secure BLE Link, Quick Hardware Controls: Charge, Discharge, Auto-Balance, Heating) with crisp monochrome icons and short text descriptions, followed by an explicit **"Get Started"** trigger.
+- **AES-256 Persistence Layer (`BmsEncryptedPrefs.kt`):** Tapping "Get Started" securely writes the boolean key `is_onboarding_complete = true` using Android `EncryptedSharedPreferences` backed directly by the Android Keystore (`MasterKey.KeyScheme.AES256_GCM`). The app's main entry point instantly inspects this encrypted key to bypass the Welcome wizard on all subsequent launches.
 
 ### 🛡️ Logical Security & User-Device Privacy Layers
 To guarantee that the mobile host device remains entirely private, untraceable, and unidentifiable by receiving BMS hardware or external packet sniffers, the application integrates three strict security layers:
