@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.bms.quicklink.data.SwitchState
 import com.bms.quicklink.data.SwitchType
 import com.bms.quicklink.ui.theme.LocalCardStyle
+import com.bms.quicklink.ui.theme.LocalCornerStyle
 
 @Composable
 fun ControlPanel(
@@ -103,6 +104,13 @@ private fun ControlCard(
     activeTint: Color
 ) {
     val cardStyle = LocalCardStyle.current
+    val cornerStyle = LocalCornerStyle.current
+    val cardRadius = when (cornerStyle) {
+        "SHARP" -> 4.dp
+        "SOFT" -> 20.dp
+        else -> 12.dp
+    }
+
     val cardBg = when (cardStyle) {
         "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = if (isEnabled) 0.35f else 0.2f)
         "OUTLINED" -> Color.Transparent
@@ -116,11 +124,11 @@ private fun ControlCard(
     val accentBarColor = if (isChecked && isEnabled) activeTint else Color.Transparent
 
     Card(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(cardRadius),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         modifier = Modifier
             .fillMaxWidth()
-            .border(if (cardStyle == "FILLED" && !isChecked) 0.dp else 1.dp, borderColor, RoundedCornerShape(12.dp))
+            .border(if (cardStyle == "FILLED" && !isChecked) 0.dp else 1.dp, borderColor, RoundedCornerShape(cardRadius))
             .animateContentSize()
     ) {
         Row(
@@ -143,7 +151,6 @@ private fun ControlCard(
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Clean icon placement, no neon boxes
                 Icon(
                     imageVector = icon,
                     contentDescription = title,

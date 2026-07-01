@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.ui.theme.LocalCardStyle
+import com.bms.quicklink.ui.theme.LocalCornerStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,6 +35,12 @@ fun DeveloperScreen(
 ) {
     val uriHandler = LocalUriHandler.current
     val cardStyle = LocalCardStyle.current
+    val cornerStyle = LocalCornerStyle.current
+    val cardRadius = when (cornerStyle) {
+        "SHARP" -> 4.dp
+        "SOFT" -> 20.dp
+        else -> 12.dp
+    }
 
     val cardBg = when (cardStyle) {
         "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
@@ -69,11 +76,11 @@ fun DeveloperScreen(
             item {
                 // Main Profile Card
                 Card(
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(cardRadius),
                     colors = CardDefaults.cardColors(containerColor = cardBg),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(12.dp))
+                        .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(cardRadius))
                 ) {
                     Row(
                         modifier = Modifier
@@ -81,7 +88,6 @@ fun DeveloperScreen(
                             .fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Clean icon placement, no neon boxes
                         Icon(imageVector = Icons.Default.Person, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(36.dp))
                         Spacer(modifier = Modifier.width(20.dp))
                         Column(modifier = Modifier.weight(1f)) {
@@ -103,7 +109,6 @@ fun DeveloperScreen(
                 Text(text = "Connect & Handles", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
             }
 
-            // GitHub Handle
             item {
                 SocialHandleCard(
                     title = "GitHub",
@@ -112,11 +117,11 @@ fun DeveloperScreen(
                     cardBg = cardBg,
                     cardBorder = cardBorder,
                     cardStyle = cardStyle,
+                    cardRadius = cardRadius,
                     onClick = { uriHandler.openUri("https://github.com/masterace572-prog") }
                 )
             }
 
-            // Instagram Handle
             item {
                 SocialHandleCard(
                     title = "Instagram",
@@ -125,11 +130,11 @@ fun DeveloperScreen(
                     cardBg = cardBg,
                     cardBorder = cardBorder,
                     cardStyle = cardStyle,
+                    cardRadius = cardRadius,
                     onClick = { uriHandler.openUri("https://instagram.com/yt.android_gamer") }
                 )
             }
 
-            // Telegram Handle
             item {
                 SocialHandleCard(
                     title = "Telegram",
@@ -138,11 +143,11 @@ fun DeveloperScreen(
                     cardBg = cardBg,
                     cardBorder = cardBorder,
                     cardStyle = cardStyle,
+                    cardRadius = cardRadius,
                     onClick = { uriHandler.openUri("https://t.me/libAkAudioVisiual") }
                 )
             }
 
-            // WhatsApp Business Handle
             item {
                 SocialHandleCard(
                     title = "WhatsApp Business",
@@ -151,11 +156,11 @@ fun DeveloperScreen(
                     cardBg = cardBg,
                     cardBorder = cardBorder,
                     cardStyle = cardStyle,
+                    cardRadius = cardRadius,
                     onClick = { uriHandler.openUri("https://wa.me/917707887028") }
                 )
             }
 
-            // Email Handle
             item {
                 SocialHandleCard(
                     title = "Email",
@@ -164,6 +169,7 @@ fun DeveloperScreen(
                     cardBg = cardBg,
                     cardBorder = cardBorder,
                     cardStyle = cardStyle,
+                    cardRadius = cardRadius,
                     onClick = { uriHandler.openUri("mailto:Saabarjun705@gmail.com") }
                 )
             }
@@ -183,14 +189,15 @@ private fun SocialHandleCard(
     cardBg: Color,
     cardBorder: Color,
     cardStyle: String,
+    cardRadius: androidx.compose.ui.unit.Dp,
     onClick: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(cardRadius),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         modifier = Modifier
             .fillMaxWidth()
-            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(12.dp))
+            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(cardRadius))
             .clickable(onClick = onClick)
     ) {
         Row(
@@ -199,7 +206,6 @@ private fun SocialHandleCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Clean icon placement, no neon boxes
             Icon(imageVector = icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {

@@ -12,6 +12,7 @@ class PreferencesManager(context: Context) {
         private const val KEY_THEME_MODE = "key_theme_mode" // "DARK", "LIGHT", "SYSTEM"
         private const val KEY_ACCENT_COLOR = "key_accent_color" // "BLUE", "EMERALD", "ORANGE", "ROSE", "CYAN", "PURPLE"
         private const val KEY_CARD_STYLE = "key_card_style" // "FILLED", "OUTLINED", "GLASS"
+        private const val KEY_CORNER_STYLE = "key_corner_style" // "CLASSIC", "SHARP", "SOFT"
         private const val KEY_DEVELOPER_MODE = "key_developer_mode"
         private const val KEY_VERIFY_TIMEOUT = "key_verify_timeout"
         private const val KEY_SIMULATION_MODE = "key_simulation_mode"
@@ -28,6 +29,9 @@ class PreferencesManager(context: Context) {
 
     private val _cardStyle = MutableStateFlow(prefs.getString(KEY_CARD_STYLE, "FILLED") ?: "FILLED")
     val cardStyle: StateFlow<String> = _cardStyle
+
+    private val _cornerStyle = MutableStateFlow(prefs.getString(KEY_CORNER_STYLE, "CLASSIC") ?: "CLASSIC")
+    val cornerStyle: StateFlow<String> = _cornerStyle
 
     private val _isDeveloperMode = MutableStateFlow(prefs.getBoolean(KEY_DEVELOPER_MODE, false))
     val isDeveloperMode: StateFlow<Boolean> = _isDeveloperMode
@@ -54,6 +58,11 @@ class PreferencesManager(context: Context) {
     fun setCardStyle(style: String) {
         prefs.edit().putString(KEY_CARD_STYLE, style).apply()
         _cardStyle.value = style
+    }
+
+    fun setCornerStyle(style: String) {
+        prefs.edit().putString(KEY_CORNER_STYLE, style).apply()
+        _cornerStyle.value = style
     }
 
     fun setDeveloperMode(enabled: Boolean) {

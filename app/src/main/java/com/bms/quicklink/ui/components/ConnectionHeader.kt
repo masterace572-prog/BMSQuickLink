@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.ble.BleFsmState
 import com.bms.quicklink.ui.theme.LocalCardStyle
+import com.bms.quicklink.ui.theme.LocalCornerStyle
 
 @Composable
 fun ConnectionHeader(
@@ -26,6 +27,13 @@ fun ConnectionHeader(
     modifier: Modifier = Modifier
 ) {
     val cardStyle = LocalCardStyle.current
+    val cornerStyle = LocalCornerStyle.current
+    val cardRadius = when (cornerStyle) {
+        "SHARP" -> 4.dp
+        "SOFT" -> 20.dp
+        else -> 12.dp
+    }
+
     val (statusText, deviceName, rssi, baseBgColor, contentColor, icon, badgeColor, badgeTextColor) = when (fsmState) {
         is BleFsmState.Disconnected -> {
             HeaderData(
@@ -89,11 +97,11 @@ fun ConnectionHeader(
     }
 
     Card(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(cardRadius),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         modifier = modifier
             .fillMaxWidth()
-            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(12.dp))
+            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(cardRadius))
     ) {
         Column(
             modifier = Modifier
@@ -101,7 +109,7 @@ fun ConnectionHeader(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Top Row: Status Icon & Status Badge Pill (Clean monochrome icon alignment, no neon boxes)
+            // Top Row: Status Icon & Status Badge Pill
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,

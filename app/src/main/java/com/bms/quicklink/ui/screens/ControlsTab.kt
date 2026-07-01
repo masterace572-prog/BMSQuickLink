@@ -20,6 +20,7 @@ import com.bms.quicklink.ble.BleFsmState
 import com.bms.quicklink.ui.BmsViewModel
 import com.bms.quicklink.ui.components.ControlPanel
 import com.bms.quicklink.ui.theme.LocalCardStyle
+import com.bms.quicklink.ui.theme.LocalCornerStyle
 
 @Composable
 fun ControlsTab(
@@ -32,6 +33,12 @@ fun ControlsTab(
     val switchState by viewModel.switchState.collectAsState()
     val isSimulationMode by viewModel.isSimulationMode.collectAsState()
     val cardStyle = LocalCardStyle.current
+    val cornerStyle = LocalCornerStyle.current
+    val cardRadius = when (cornerStyle) {
+        "SHARP" -> 4.dp
+        "SOFT" -> 20.dp
+        else -> 12.dp
+    }
 
     val isConnected = fsmState is BleFsmState.Connected
 
@@ -85,11 +92,11 @@ fun ControlsTab(
             val bannerBorder = if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline
 
             Card(
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(cardRadius),
                 colors = CardDefaults.cardColors(containerColor = bannerBg),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, bannerBorder, RoundedCornerShape(12.dp))
+                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, bannerBorder, RoundedCornerShape(cardRadius))
             ) {
                 Row(
                     modifier = Modifier
@@ -121,7 +128,7 @@ fun ControlsTab(
             }
         }
 
-        // Control Panel (Always visible, switches dynamically enable/disable based on connection state)
+        // Control Panel
         ControlPanel(
             isConnected = isConnected,
             switchState = switchState,

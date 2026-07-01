@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.data.BmsDevice
 import com.bms.quicklink.ui.theme.LocalCardStyle
+import com.bms.quicklink.ui.theme.LocalCornerStyle
 
 @Composable
 fun DeviceListCard(
@@ -27,6 +28,13 @@ fun DeviceListCard(
     modifier: Modifier = Modifier
 ) {
     val cardStyle = LocalCardStyle.current
+    val cornerStyle = LocalCornerStyle.current
+    val cardRadius = when (cornerStyle) {
+        "SHARP" -> 4.dp
+        "SOFT" -> 20.dp
+        else -> 12.dp
+    }
+
     val cardBg = when (cardStyle) {
         "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f)
         "OUTLINED" -> Color.Transparent
@@ -39,11 +47,11 @@ fun DeviceListCard(
     }
 
     Card(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(cardRadius),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         modifier = modifier
             .fillMaxWidth()
-            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(12.dp))
+            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(cardRadius))
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(
@@ -103,6 +111,13 @@ private fun DeviceItem(
     onConnect: () -> Unit
 ) {
     val cardStyle = LocalCardStyle.current
+    val cornerStyle = LocalCornerStyle.current
+    val itemRadius = when (cornerStyle) {
+        "SHARP" -> 4.dp
+        "SOFT" -> 20.dp
+        else -> 12.dp
+    }
+
     val itemBg = when (cardStyle) {
         "GLASS" -> MaterialTheme.colorScheme.surface.copy(alpha = 0.6f)
         "OUTLINED" -> Color.Transparent
@@ -115,11 +130,11 @@ private fun DeviceItem(
     }
 
     Card(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(itemRadius),
         colors = CardDefaults.cardColors(containerColor = itemBg),
         modifier = Modifier
             .fillMaxWidth()
-            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, itemBorder, RoundedCornerShape(12.dp))
+            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, itemBorder, RoundedCornerShape(itemRadius))
             .clickable(onClick = onConnect)
     ) {
         Row(
@@ -128,7 +143,6 @@ private fun DeviceItem(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Clean icon placement, no neon boxes
             Icon(
                 imageVector = Icons.Default.Bluetooth,
                 contentDescription = null,

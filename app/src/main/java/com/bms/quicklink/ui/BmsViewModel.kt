@@ -56,6 +56,7 @@ class BmsViewModel(private val repository: BmsRepository) : ViewModel() {
     val themeMode: StateFlow<String> = repository.themeMode
     val accentColor: StateFlow<String> = repository.accentColor
     val cardStyle: StateFlow<String> = repository.cardStyle
+    val cornerStyle: StateFlow<String> = repository.cornerStyle
     val verifyTimeoutMs: StateFlow<Long> = repository.verifyTimeoutMs
     val isSimulationMode: StateFlow<Boolean> = repository.isSimulationMode
     val isOnboardingCompleted: StateFlow<Boolean> = repository.isOnboardingCompleted
@@ -64,6 +65,7 @@ class BmsViewModel(private val repository: BmsRepository) : ViewModel() {
     fun onThemeModeSelected(mode: String) = repository.setThemeMode(mode)
     fun onAccentColorSelected(color: String) = repository.setAccentColor(color)
     fun onCardStyleSelected(style: String) = repository.setCardStyle(style)
+    fun onCornerStyleSelected(style: String) = repository.setCornerStyle(style)
     fun onVerifyTimeoutSelected(timeoutMs: Long) = repository.setVerifyTimeoutMs(timeoutMs)
     fun onSimulationModeToggled(enabled: Boolean) = repository.setSimulationMode(enabled)
     fun onOnboardingCompleted() = repository.setOnboardingCompleted(true)

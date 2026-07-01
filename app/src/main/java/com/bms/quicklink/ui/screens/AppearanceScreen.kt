@@ -30,6 +30,7 @@ fun AppearanceScreen(
     val themeMode by viewModel.themeMode.collectAsState()
     val accentColor by viewModel.accentColor.collectAsState()
     val cardStyle by viewModel.cardStyle.collectAsState()
+    val cornerStyle by viewModel.cornerStyle.collectAsState()
 
     Scaffold(
         topBar = {
@@ -67,7 +68,7 @@ fun AppearanceScreen(
                         .padding(6.dp),
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    val modes = listOf("DARK" to "Solid Dark", "LIGHT" to "Solid Light", "SYSTEM" to "System")
+                    val modes = listOf("DARK" to "Dark Mode", "LIGHT" to "Light Mode", "SYSTEM" to "System")
                     modes.forEach { (modeKey, modeLabel) ->
                         val isSelected = themeMode == modeKey
                         val bgColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
@@ -161,6 +162,41 @@ fun AppearanceScreen(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(text = styleLabel, style = MaterialTheme.typography.titleMedium, color = textColor)
+                        }
+                    }
+                }
+            }
+
+            Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 2.dp))
+
+            // 4. Corner Style Selector Pill Bar
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(text = "Card Corner Style", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
+                Text(text = "Customize the physical corner rounding of cards across the application.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                        .padding(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    val corners = listOf("CLASSIC" to "Classic", "SHARP" to "Sharp", "SOFT" to "Soft")
+                    corners.forEach { (cornerKey, cornerLabel) ->
+                        val isSelected = cornerStyle == cornerKey
+                        val bgColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
+                        val textColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant)
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(bgColor)
+                                .clickable { viewModel.onCornerStyleSelected(cornerKey) }
+                                .padding(vertical = 10.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = cornerLabel, style = MaterialTheme.typography.titleMedium, color = textColor)
                         }
                     }
                 }

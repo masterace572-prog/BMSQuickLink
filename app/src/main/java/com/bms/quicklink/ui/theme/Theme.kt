@@ -15,12 +15,14 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 val LocalCardStyle = compositionLocalOf { "FILLED" }
+val LocalCornerStyle = compositionLocalOf { "CLASSIC" }
 
 @Composable
 fun BMSQuickLinkTheme(
     themeMode: String,
     accentColorName: String,
     cardStyle: String,
+    cornerStyle: String,
     content: @Composable () -> Unit
 ) {
     val isDark = when (themeMode) {
@@ -43,7 +45,7 @@ fun BMSQuickLinkTheme(
         darkColorScheme(
             primary = primaryAccent,
             onPrimary = CorporateBackgroundDark,
-            primaryContainer = CorporateSurfaceVariantDark, // No neon/pastel primary container
+            primaryContainer = CorporateSurfaceVariantDark,
             onPrimaryContainer = primaryAccent,
             secondary = primaryAccent,
             onSecondary = CorporateBackgroundDark,
@@ -68,7 +70,7 @@ fun BMSQuickLinkTheme(
         lightColorScheme(
             primary = primaryAccent,
             onPrimary = CorporateSurfaceLight,
-            primaryContainer = CorporateSurfaceVariantLight, // No neon/pastel primary container
+            primaryContainer = CorporateSurfaceVariantLight,
             onPrimaryContainer = primaryAccent,
             secondary = primaryAccent,
             onSecondary = CorporateSurfaceLight,
@@ -101,7 +103,10 @@ fun BMSQuickLinkTheme(
         }
     }
 
-    CompositionLocalProvider(LocalCardStyle provides cardStyle) {
+    CompositionLocalProvider(
+        LocalCardStyle provides cardStyle,
+        LocalCornerStyle provides cornerStyle
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             typography = Typography,

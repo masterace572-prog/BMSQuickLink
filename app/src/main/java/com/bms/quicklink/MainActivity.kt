@@ -60,11 +60,13 @@ class MainActivity : ComponentActivity() {
             val themeMode by viewModel.themeMode.collectAsState()
             val accentColor by viewModel.accentColor.collectAsState()
             val cardStyle by viewModel.cardStyle.collectAsState()
+            val cornerStyle by viewModel.cornerStyle.collectAsState()
 
             BMSQuickLinkTheme(
                 themeMode = themeMode,
                 accentColorName = accentColor,
-                cardStyle = cardStyle
+                cardStyle = cardStyle,
+                cornerStyle = cornerStyle
             ) {
                 if (!hasBleSupport) {
                     UnsupportedDeviceScreen()

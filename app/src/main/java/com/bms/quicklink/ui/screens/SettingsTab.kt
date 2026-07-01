@@ -22,11 +22,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bms.quicklink.db.AuditLogEntity
 import com.bms.quicklink.ui.BmsViewModel
 import com.bms.quicklink.ui.theme.LocalCardStyle
+import com.bms.quicklink.ui.theme.LocalCornerStyle
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,6 +44,13 @@ fun SettingsTab(
     val auditLogs by viewModel.auditLogs.collectAsState()
 
     val cardStyle = LocalCardStyle.current
+    val cornerStyle = LocalCornerStyle.current
+    val cardRadius = when (cornerStyle) {
+        "SHARP" -> 4.dp
+        "SOFT" -> 20.dp
+        else -> 12.dp
+    }
+
     val cardBg = when (cardStyle) {
         "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
         "OUTLINED" -> Color.Transparent
@@ -63,7 +72,6 @@ fun SettingsTab(
 
         // Navigation Sections
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            // Appearance Nav Card
             PreferenceNavCard(
                 title = "Appearance",
                 subtitle = "Customize active themes, solid accent palette, and card styles",
@@ -71,10 +79,10 @@ fun SettingsTab(
                 cardBg = cardBg,
                 cardBorder = cardBorder,
                 cardStyle = cardStyle,
+                cardRadius = cardRadius,
                 onClick = { navController.navigate("appearance") }
             )
 
-            // Developer Profile Nav Card
             PreferenceNavCard(
                 title = "Developer Profile",
                 subtitle = "About Anoy (Arjun) & social connect handles",
@@ -82,10 +90,10 @@ fun SettingsTab(
                 cardBg = cardBg,
                 cardBorder = cardBorder,
                 cardStyle = cardStyle,
+                cardRadius = cardRadius,
                 onClick = { navController.navigate("developer") }
             )
 
-            // Terms & Conditions Nav Card
             PreferenceNavCard(
                 title = "Terms & Conditions",
                 subtitle = "Read usage guidelines & hardware safety parameters",
@@ -93,10 +101,10 @@ fun SettingsTab(
                 cardBg = cardBg,
                 cardBorder = cardBorder,
                 cardStyle = cardStyle,
+                cardRadius = cardRadius,
                 onClick = { navController.navigate("terms") }
             )
 
-            // Privacy Policy Nav Card
             PreferenceNavCard(
                 title = "Privacy Policy",
                 subtitle = "View absolute offline security & zero tracking mandate",
@@ -104,6 +112,7 @@ fun SettingsTab(
                 cardBg = cardBg,
                 cardBorder = cardBorder,
                 cardStyle = cardStyle,
+                cardRadius = cardRadius,
                 onClick = { navController.navigate("privacy") }
             )
         }
@@ -152,11 +161,11 @@ fun SettingsTab(
 
             // Developer Mode Card
             Card(
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(cardRadius),
                 colors = CardDefaults.cardColors(containerColor = cardBg),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(12.dp))
+                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(cardRadius))
             ) {
                 Row(
                     modifier = Modifier
@@ -164,7 +173,6 @@ fun SettingsTab(
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Clean icon placement, no neon boxes
                     Icon(
                         imageVector = Icons.Default.DeveloperMode,
                         contentDescription = "Developer Mode",
@@ -195,11 +203,11 @@ fun SettingsTab(
 
             // Simulation Mode Card
             Card(
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(cardRadius),
                 colors = CardDefaults.cardColors(containerColor = cardBg),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(12.dp))
+                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(cardRadius))
             ) {
                 Row(
                     modifier = Modifier
@@ -207,7 +215,6 @@ fun SettingsTab(
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Clean icon placement, no neon boxes
                     Icon(
                         imageVector = Icons.Default.BugReport,
                         contentDescription = "Simulation Mode",
@@ -239,7 +246,7 @@ fun SettingsTab(
 
         Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 2.dp))
 
-        // Audit Logs Section
+        // Audit Logs Section & App Footer
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -278,18 +285,38 @@ fun SettingsTab(
                 }
             } else {
                 LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.heightIn(max = 320.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(auditLogs, key = { it.id }) { log ->
-                        AuditLogItem(log = log)
-                    }
-                    
-                    item {
-                        Spacer(modifier = Modifier.height(110.dp))
+                        AuditLogItem(log = log, cardRadius = cardRadius)
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
+            
+            // App Version & Creator Footer Text
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = "BMS Quick Link & Control v9.0",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = "Developed by Anoy",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            Spacer(modifier = Modifier.height(110.dp))
         }
     }
 }
@@ -302,14 +329,15 @@ private fun PreferenceNavCard(
     cardBg: Color,
     cardBorder: Color,
     cardStyle: String,
+    cardRadius: androidx.compose.ui.unit.Dp,
     onClick: () -> Unit
 ) {
     Card(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(cardRadius),
         colors = CardDefaults.cardColors(containerColor = cardBg),
         modifier = Modifier
             .fillMaxWidth()
-            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(12.dp))
+            .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(cardRadius))
             .clickable(onClick = onClick)
     ) {
         Row(
@@ -318,7 +346,6 @@ private fun PreferenceNavCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Clean icon placement, no neon boxes
             Icon(imageVector = icon, contentDescription = title, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(24.dp))
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
@@ -333,17 +360,17 @@ private fun PreferenceNavCard(
 }
 
 @Composable
-private fun AuditLogItem(log: AuditLogEntity) {
+private fun AuditLogItem(log: AuditLogEntity, cardRadius: androidx.compose.ui.unit.Dp) {
     val timeFormat = remember { SimpleDateFormat("HH:mm:ss - MMM dd", Locale.getDefault()) }
     val timeString = remember(log.timestamp) { timeFormat.format(Date(log.timestamp)) }
     val isSuccess = log.status == "SUCCESS"
 
     Card(
-        shape = RoundedCornerShape(12.dp),
+        shape = RoundedCornerShape(cardRadius),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)),
         modifier = Modifier
             .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+            .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.5f), RoundedCornerShape(cardRadius))
     ) {
         Row(
             modifier = Modifier

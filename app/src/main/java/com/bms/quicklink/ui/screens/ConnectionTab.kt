@@ -23,6 +23,7 @@ import com.bms.quicklink.ui.BmsViewModel
 import com.bms.quicklink.ui.components.ConnectionHeader
 import com.bms.quicklink.ui.components.DeviceListCard
 import com.bms.quicklink.ui.theme.LocalCardStyle
+import com.bms.quicklink.ui.theme.LocalCornerStyle
 
 @Composable
 fun ConnectionTab(
@@ -37,6 +38,12 @@ fun ConnectionTab(
 
     var customMacAddress by remember { mutableStateOf("") }
     val cardStyle = LocalCardStyle.current
+    val cornerStyle = LocalCornerStyle.current
+    val cardRadius = when (cornerStyle) {
+        "SHARP" -> 4.dp
+        "SOFT" -> 20.dp
+        else -> 12.dp
+    }
 
     Column(
         modifier = modifier
@@ -162,11 +169,11 @@ fun ConnectionTab(
             val directBorder = if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline
 
             Card(
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(cardRadius),
                 colors = CardDefaults.cardColors(containerColor = directBg),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, directBorder, RoundedCornerShape(12.dp))
+                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, directBorder, RoundedCornerShape(cardRadius))
             ) {
                 Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     Text(

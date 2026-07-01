@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.bms.quicklink.ui.theme.LocalCardStyle
+import com.bms.quicklink.ui.theme.LocalCornerStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,6 +22,13 @@ fun TermsScreen(
     modifier: Modifier = Modifier
 ) {
     val cardStyle = LocalCardStyle.current
+    val cornerStyle = LocalCornerStyle.current
+    val cardRadius = when (cornerStyle) {
+        "SHARP" -> 4.dp
+        "SOFT" -> 20.dp
+        else -> 12.dp
+    }
+
     val cardBg = when (cardStyle) {
         "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
         "OUTLINED" -> Color.Transparent
@@ -56,11 +64,11 @@ fun TermsScreen(
             Text(text = "Terms & Conditions of Use", style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.onBackground)
 
             Card(
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(cardRadius),
                 colors = CardDefaults.cardColors(containerColor = cardBg),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(12.dp))
+                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(cardRadius))
             ) {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     Text("1. Exclusive BLE Purpose", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)
@@ -90,6 +98,13 @@ fun PrivacyScreen(
     modifier: Modifier = Modifier
 ) {
     val cardStyle = LocalCardStyle.current
+    val cornerStyle = LocalCornerStyle.current
+    val cardRadius = when (cornerStyle) {
+        "SHARP" -> 4.dp
+        "SOFT" -> 20.dp
+        else -> 12.dp
+    }
+
     val cardBg = when (cardStyle) {
         "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
         "OUTLINED" -> Color.Transparent
@@ -125,11 +140,11 @@ fun PrivacyScreen(
             Text(text = "Absolute Offline Privacy", style = MaterialTheme.typography.headlineLarge, color = MaterialTheme.colorScheme.onBackground)
 
             Card(
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(cardRadius),
                 colors = CardDefaults.cardColors(containerColor = cardBg),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(12.dp))
+                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, cardBorder, RoundedCornerShape(cardRadius))
             ) {
                 Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     Text("1. Zero Internet Permissions", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onSurface)

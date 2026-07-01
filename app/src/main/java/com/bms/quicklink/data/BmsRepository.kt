@@ -27,6 +27,7 @@ class BmsRepository(
     val themeMode: StateFlow<String> = prefsManager.themeMode
     val accentColor: StateFlow<String> = prefsManager.accentColor
     val cardStyle: StateFlow<String> = prefsManager.cardStyle
+    val cornerStyle: StateFlow<String> = prefsManager.cornerStyle
     val verifyTimeoutMs: StateFlow<Long> = prefsManager.verifyTimeoutMs
     val isSimulationMode: StateFlow<Boolean> = prefsManager.isSimulationMode
     val isOnboardingCompleted: StateFlow<Boolean> = prefsManager.isOnboardingCompleted
@@ -80,6 +81,7 @@ class BmsRepository(
     fun setThemeMode(mode: String) = prefsManager.setThemeMode(mode)
     fun setAccentColor(color: String) = prefsManager.setAccentColor(color)
     fun setCardStyle(style: String) = prefsManager.setCardStyle(style)
+    fun setCornerStyle(style: String) = prefsManager.setCornerStyle(style)
     fun setVerifyTimeoutMs(timeoutMs: Long) = prefsManager.setVerifyTimeoutMs(timeoutMs)
     fun setSimulationMode(enabled: Boolean) = prefsManager.setSimulationMode(enabled)
     fun setOnboardingCompleted(completed: Boolean) = prefsManager.setOnboardingCompleted(completed)
