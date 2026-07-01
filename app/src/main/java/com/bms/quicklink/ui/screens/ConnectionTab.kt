@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.Terminal
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -34,9 +35,9 @@ fun ConnectionTab(
 ) {
     val fsmState by viewModel.fsmState.collectAsState()
     val scannedDevices by viewModel.scannedDevices.collectAsState()
+    val terminalLogs by viewModel.terminalLogs.collectAsState()
     val isSimulationMode by viewModel.isSimulationMode.collectAsState()
 
-    var customMacAddress by remember { mutableStateOf("") }
     val cardStyle = LocalCardStyle.current
     val cornerStyle = LocalCornerStyle.current
     val cardRadius = when (cornerStyle) {
@@ -155,67 +156,6 @@ fun ConnectionTab(
             }
         }
 
-        // Quick Link Direct Launch Card (Only visible when disconnected)
-        AnimatedVisibility(
-            visible = fsmState is BleFsmState.Disconnected && scannedDevices.isEmpty(),
-            enter = fadeIn() + expandVertically(),
-            exit = fadeOut() + shrinkVertically()
-        ) {
-            val directBg = when (cardStyle) {
-                "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
-                "OUTLINED" -> Color.Transparent
-                else -> MaterialTheme.colorScheme.surface
-            }
-            val directBorder = if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline
-
-            Card(
-                shape = RoundedCornerShape(cardRadius),
-                colors = CardDefaults.cardColors(containerColor = directBg),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, directBorder, RoundedCornerShape(cardRadius))
-            ) {
-                Column(modifier = Modifier.padding(24.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                    Text(
-                        text = "Quick Link Direct Launch",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    Text(
-                        text = "Enter a known Bluetooth MAC address to instantly establish a direct GATT connection without scanning.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    OutlinedTextField(
-                        value = customMacAddress,
-                        onValueChange = { customMacAddress = it },
-                        label = { Text("Bluetooth MAC Address") },
-                        placeholder = { Text("00:11:22:33:44:55") },
-                        singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Button(
-                        onClick = {
-                            if (hasPermissions || isSimulationMode) {
-                                viewModel.onConnectToMacAddressTapped(customMacAddress)
-                            } else {
-                                onRequestPermissions()
-                            }
-                        },
-                        enabled = customMacAddress.isNotBlank(),
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 14.dp)
-                    ) {
-                        Text(text = "Direct Connect", style = MaterialTheme.typography.titleMedium)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = null, modifier = Modifier.size(18.dp))
-                    }
-                }
-            }
-        }
-
         // Scanned Devices List (Hidden when connected)
         AnimatedVisibility(
             visible = fsmState is BleFsmState.Scanning || (fsmState is BleFsmState.Disconnected && scannedDevices.isNotEmpty()),
@@ -232,6 +172,69 @@ fun ConnectionTab(
                     }
                 }
             )
+        }
+
+        Divider(color = MaterialTheme.colorScheme.outline, modifier = Modifier.padding(vertical = 2.dp))
+
+        // Live Scan & Connection Terminal Console
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(imageVector = Icons.Default.Terminal, contentDescription = "Terminal", tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(22.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "Live Connection Terminal",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+                if (terminalLogs.isNotEmpty()) {
+                    TextButton(onClick = { viewModel.onClearTerminalLogsTapped() }) {
+                        Text(text = "Clear Logs", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.error)
+                    }
+                }
+            }
+
+            val terminalBg = when (cardStyle) {
+                "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                "OUTLINED" -> Color.Transparent
+                else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+            }
+            val terminalBorder = if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+
+            Card(
+                shape = RoundedCornerShape(cardRadius),
+                colors = CardDefaults.cardColors(containerColor = terminalBg),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(240.dp)
+                    .border(if (cardStyle == "FILLED") 0.dp else 1.dp, terminalBorder, RoundedCornerShape(cardRadius))
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    terminalLogs.forEach { logLine ->
+                        Text(
+                            text = logLine,
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.85f),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(110.dp))

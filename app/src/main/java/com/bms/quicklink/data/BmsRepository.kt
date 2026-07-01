@@ -21,6 +21,7 @@ class BmsRepository(
 
     val fsmState: StateFlow<BleFsmState> = bleManager.fsmState
     val scannedDevices: StateFlow<List<BmsDevice>> = bleManager.scannedDevices
+    val terminalLogs: StateFlow<List<String>> = bleManager.terminalLogs
     val developerMode: StateFlow<Boolean> = prefsManager.isDeveloperMode
 
     // Appearance & Hardware Configuration Flows
@@ -76,6 +77,7 @@ class BmsRepository(
     fun connect(device: BmsDevice) = bleManager.connect(device)
     fun connectToMacAddress(address: String) = bleManager.connectToMacAddress(address)
     fun disconnect() = bleManager.disconnect()
+    fun clearTerminalLogs() = bleManager.clearTerminalLogs()
 
     fun setDeveloperMode(enabled: Boolean) = prefsManager.setDeveloperMode(enabled)
     fun setThemeMode(mode: String) = prefsManager.setThemeMode(mode)

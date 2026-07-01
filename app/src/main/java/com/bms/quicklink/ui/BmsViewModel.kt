@@ -20,6 +20,7 @@ class BmsViewModel(private val repository: BmsRepository) : ViewModel() {
     val fsmState: StateFlow<BleFsmState> = repository.fsmState
     val scannedDevices: StateFlow<List<BmsDevice>> = repository.scannedDevices
     val switchState: StateFlow<SwitchState> = repository.switchState
+    val terminalLogs: StateFlow<List<String>> = repository.terminalLogs
     val errorEvents: SharedFlow<String> = repository.errorEvents
 
     private val _confirmationDialogState = MutableStateFlow<ConfirmationDialogData?>(null)
@@ -30,6 +31,7 @@ class BmsViewModel(private val repository: BmsRepository) : ViewModel() {
     fun onConnectTapped(device: BmsDevice) = repository.connect(device)
     fun onConnectToMacAddressTapped(address: String) = repository.connectToMacAddress(address)
     fun onDisconnectTapped() = repository.disconnect()
+    fun onClearTerminalLogsTapped() = repository.clearTerminalLogs()
 
     fun onSwitchToggled(switchType: SwitchType, targetState: Boolean) {
         if (fsmState.value !is BleFsmState.Connected) return

@@ -1,10 +1,10 @@
-# BMS Quick Link & Control (13.0 Ultimate Floating Masterpiece Edition)
+# BMS Quick Link & Control (14.0 Final Terminal Console Edition)
 
-**Version:** 13.0 (Ultimate Floating Masterpiece Edition)  
+**Version:** 14.0 (Final Live Connection Terminal Edition)  
 **Platform:** Android  
 **Language:** Kotlin  
 **UI Framework:** Jetpack Compose (Material 3)  
-**Design System:** Masterpiece Floating Dock + Real-Time Customization Engine (Themes, Palettes, Card/Corner Styles)  
+**Design System:** Masterpiece Floating Dock + Live Scan Terminal + Real-Time Customization Engine  
 **Security:** Resolvable Private Addresses (RPA) + EncryptedSharedPreferences (AES-256) + R8 Sandboxing  
 **Backend:** Local SQLite Database (Connected-Only Audit Logs)  
 **Communication:** Bluetooth Low Energy (BLE)  
@@ -21,27 +21,19 @@ Per the PRD, the application intentionally excludes every monitoring, telemetry,
 
 ---
 
-## Ultimate Masterpiece Specs (v13.0 Final)
+## Ultimate Terminal Console Specs (v14.0 Final)
 
-### 🌟 Jaw-Dropping UI/UX Design System
-To deliver a world-class, ultra-premium experience that feels like a flagship tech/corporate dashboard, the entire application has been transformed with cutting-edge visual design:
-- **Spectacular Floating Navigation Dock (`MainScreen.kt`):** Transformed the standard bottom navigation bar into a spectacularly modern floating dock (modeled after the latest high-end dynamic interfaces). It hovers elegantly above the background with `RoundedCornerShape(36.dp)`, custom pill indicator highlights, and soft natural drop shadows.
-- **Jaw-Dropping Connection Dashboard (`ConnectionHeader.kt`):** A masterpiece header card featuring a large 64dp dedicated square icon container, prominent MAC address presentation, and an explicit live RSSI signal meter bar (representing physical connection strength via 4 clean vertical pill bars).
-- **Left Accent Indicator Bars (`ControlPanel.kt`):** Hardware switches now feature an elegant 6dp left accent indicator bar, explicit status tags (`ACTIVE` / `OFF`), and custom animated content expansion.
-- **View-Only Dimmed Controls (`ControlsTab.kt`):** When disconnected, the app keeps the actual control switches fully visible in a beautifully dimmed, unclickable view-only mode accompanied by an elegant professional info banner.
-- **High-End 2-Screen Welcome Wizard (`OnboardingScreen.kt`):** An intuitive sliding `HorizontalPager` flow featuring a 110dp branding container (`Icons.Default.BluetoothConnected`), animated indicator dots, and dynamic action buttons ("Continue" on Page 1 sliding to Page 2, "Get Started" on Page 2).
+### 🌟 Live Scan & Connection Terminal (`ConnectionTab.kt`, `BleManager.kt`)
+Per user specification, the manual Quick Link Direct Launch card has been permanently removed from the Connection tab in favor of an elite, real-time **Live Connection Terminal Console**:
+- **Real-Time Log Stream:** Displays an automated, timestamped console stream tracking the entire BLE scanning lifecycle, active device discoveries, GATT connection state callbacks, MTU 247 negotiation, service discovery, and simulated hardware responses.
+- **Interactive Log Clearing:** Includes an explicit "Clear Logs" trigger in the terminal header to instantly wipe the active terminal buffer.
+- **Masterpiece Presentation:** Enclosed in a beautifully styled, high-contrast terminal box (`surfaceVariant.copy(alpha = 0.6f)`) that dynamically adapts to your chosen Card Style and Corner Style settings!
 
-### 🎨 Fully Functional Real-Time Appearance Console (`AppearanceScreen.kt`, `Theme.kt`)
-Accessible instantly in the Settings screen, the Appearance Console provides full-featured, highly intuitive customization that instantly re-themes the entire application in real-time:
-- **3-Way Theme Mode Selection:** Easily toggle between **Dark Mode**, **Light Mode**, and **System Default**.
-- **Dynamic Accent Swatch Palette:** Instantly change the app's solid accent color across active switches, primary buttons, floating navigation indicators, and badge pills. Choose from an elite palette of 6 striking pairings: `Corporate Blue`, `Corporate Green`, `Corporate Orange`, `Corporate Red`, `Corporate Teal`, and `Corporate Purple`.
-- **3-Way Card Style Engine (`LocalCardStyle`):** Change the architectural appearance of cards across the entire application instantly (`Solid Clean`, `Border Outlined`, `Translucent`).
-- **3-Way Card Corner Style Engine (`LocalCornerStyle`):** Adjust the physical corner rounding of cards across the entire app instantly (`Classic`, `Sharp`, `Soft`).
-- **Corporate Footer (`SettingsTab.kt`):** Features a clean, professional app footer text centered beautifully above the floating navigation dock:
-  ```text
-  BMS Quick Link & Control v12.0
-  Developed by Anoy
-  ```
+### 🧭 Streamlined Navigation Suite (`MainScreen.kt`)
+The bottom navigation bar has been re-architected into a compact, professional 3-tab layout:
+1. **Connection Tab (`ConnectionTab.kt`):** Dedicated exclusively to connection lifecycle management, featuring the `ConnectionHeader`, primary Action Buttons, discovered devices radar list, and the Live Connection Terminal. No hardware switches are present here.
+2. **Controls Tab (`ControlsTab.kt`):** Displays the four physical hardware switches (`ControlPanel`). If no BLE connection is active, it presents an elegant professional information banner and keeps the actual hardware switches fully visible but safely disabled (dimmed/unclickable) until a connection is made!
+3. **Settings Tab (`SettingsTab.kt`):** Houses the Appearance Console, Developer Profile, Legal copy, Verification Timeout customizer, and connected-only SQLite Audit Logs.
 
 ---
 
