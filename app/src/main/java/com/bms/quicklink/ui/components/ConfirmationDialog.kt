@@ -28,33 +28,33 @@ fun ConfirmationDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(32.dp),
         containerColor = MaterialTheme.colorScheme.surface,
         icon = {
             Icon(imageVector = Icons.Default.Warning, contentDescription = "Warning Icon", tint = MaterialTheme.colorScheme.tertiary)
         },
         title = {
-            Text(text = "Confirm Hardware Change", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "Confirm Hardware Change", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
         },
         text = {
-            Text(text = bodyText, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.padding(top = 8.dp))
+            Text(text = bodyText, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.padding(top = 8.dp))
         },
         confirmButton = {
             Button(
                 onClick = onConfirm,
-                shape = MaterialTheme.shapes.medium,
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                shape = MaterialTheme.shapes.large,
+                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
             ) {
-                Text(text = "Confirm", style = MaterialTheme.typography.labelLarge)
+                Text(text = "Confirm", style = MaterialTheme.typography.titleMedium)
             }
         },
         dismissButton = {
             OutlinedButton(
                 onClick = onDismiss,
-                shape = MaterialTheme.shapes.medium,
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                shape = MaterialTheme.shapes.large,
+                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
             ) {
-                Text(text = "Cancel", style = MaterialTheme.typography.labelLarge)
+                Text(text = "Cancel", style = MaterialTheme.typography.titleMedium)
             }
         }
     )

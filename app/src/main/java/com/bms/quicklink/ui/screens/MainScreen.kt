@@ -2,6 +2,7 @@ package com.bms.quicklink.ui.screens
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -60,9 +61,11 @@ fun MainScreen(
                 Surface(
                     shape = RoundedCornerShape(32.dp),
                     color = MaterialTheme.colorScheme.surface,
-                    tonalElevation = 8.dp,
+                    tonalElevation = 6.dp,
                     shadowElevation = 12.dp,
-                    modifier = Modifier.fillMaxWidth(0.95f)
+                    modifier = Modifier
+                        .fillMaxWidth(0.95f)
+                        .border(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.3f), RoundedCornerShape(32.dp))
                 ) {
                     NavigationBar(
                         containerColor = Color.Transparent,
@@ -80,7 +83,7 @@ fun MainScreen(
                                 colors = NavigationBarItemDefaults.colors(
                                     selectedIconColor = MaterialTheme.colorScheme.primary,
                                     selectedTextColor = MaterialTheme.colorScheme.primary,
-                                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                    indicatorColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                                     unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                     unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                                 ),

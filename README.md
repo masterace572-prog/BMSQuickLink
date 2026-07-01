@@ -1,10 +1,10 @@
-# BMS Quick Link & Control (6.0 Ultimate Feature Pack Edition)
+# BMS Quick Link & Control (7.0 Production-Ready Solid Edition)
 
-**Version:** 6.0 (Ultimate Pro Feature Pack & UI/UX Redesign)  
+**Version:** 7.0 (Production-Ready Solid UI Edition)  
 **Platform:** Android  
 **Language:** Kotlin  
 **UI Framework:** Jetpack Compose (Material 3)  
-**Design System:** Elite Appearance Console + Hardware Configuration Suite  
+**Design System:** Solid Architectural Palette (Zero Neon, Zero Gradients)  
 **Backend:** Local SQLite Database (Saved Devices & Connected-Only Audit Logs)  
 **Communication:** Bluetooth Low Energy (BLE)  
 **Architecture:** MVVM + Repository + SharedPreferences Flows + StateFlow + Coroutines
@@ -20,24 +20,18 @@ Per the PRD, the application intentionally excludes every monitoring, telemetry,
 
 ---
 
-## Ultimate Pro Feature Pack (v6.0)
+## Production-Ready Solid Architectural Specifications (v7.0)
 
-### 🛠️ Elite Fully Functional Hardware Features
-- **BLE Notify Verification Timeout Customizer (`SettingsTab.kt`):** Customize the precise time allowance for GATT Notify hardware verification (`1.0s`, `2.0s`, `3.0s`, `5.0s`). Ensures seamless compatibility with both ultra-fast and high-latency BMS microcontrollers.
-- **Quick Link Direct Launch (`ControlsTab.kt`):** Type in or paste any known Bluetooth MAC address to instantly establish a direct GATT connection without waiting for ambient radio scans!
-- **BMS Profile Nickname Live Editor (`SavedDevicesTab.kt`):** Full interactive database CRUD capabilities allowing users to update and edit custom nicknames for saved battery profiles at any time.
-- **Offline Demo / Simulation Mode (`BleManager.kt`, `CommandEngine.kt`):** Toggle a virtual offline proving ground in Settings. Instantly discover and connect to virtual LiFePO4 BMS hardware, test switch latency, simulate Notify verification packets, and generate real database audit logs without needing physical batteries nearby!
+### 💎 Professional Solid Palette (Zero Neon & Zero Gradients)
+To deliver the ultimate corporate hardware dashboard finish, all harsh neon tones have been replaced with rich, classic solid architectural colors:
+- **Rich Solid Dark Mode:** Deep solid charcoal background (`0xFF121212`) and solid surface (`0xFF1E1E1E`) with crisp solid borders (`0xFF383838`).
+- **Crisp Solid Light Mode:** Light neutral background (`0xFFF5F5F5`) and pure solid white surface (`0xFFFFFFFF`).
+- **Classic Solid Accent Swatches:** Offers 6 professional hardware utility pairings: `Classic Blue` (`0xFF1976D2`), `Classic Green` (`0xFF2E7D32`), `Classic Orange` (`0xFFE65100`), `Classic Crimson` (`0xFFC62828`), `Classic Teal` (`0xFF00695C`), and `Classic Purple` (`0xFF6A1B9A`).
 
-### 🎨 Fully Functional Real-Time Appearance Console
-Accessible in the Settings screen, the Appearance Console provides full-featured, highly intuitive customization that instantly re-themes the entire application in real-time:
-- **3-Way Theme Mode Selection:** Easily toggle between **Dark Mode (Obsidian)**, **Light Mode (Arctic)**, and **System Default**.
-- **Dynamic Accent Swatch Palette:** Instantly change the app's accent color across active switches, primary buttons, floating navigation indicators, and badge pills. Choose from an elite palette of 6 striking pairings: `Electric Blue`, `Emerald Green`, `Sunset Orange`, `Rose Crimson`, `Cyber Cyan`, and `Royal Purple`.
-- **3-Way Card Style Engine (`LocalCardStyle`):** Change the architectural appearance of cards across the entire application instantly (`Solid Clean`, `Border Outlined`, `Glassmorphism`).
-
-### 🌟 High-End Scaffolding & Layouts
-- **Floating Pill Navigation Dock (`MainScreen.kt`):** A spectacularly modern floating navigation bar offering custom pill indicator highlights, zero tonal distortion, and beautiful floating elevation.
-- **Live RSSI Signal Meter Bars (`ConnectionHeader.kt`):** An absolute masterpiece header featuring dedicated square icon highlight containers, MAC address presentation, and an explicit live RSSI signal meter bar.
-- **Left Accent Indicator Bars (`ControlPanel.kt`):** Hardware switches feature an elegant 6dp left accent indicator bar, explicit status tags (`ACTIVE` / `OFF`), and custom animated content expansion.
+### 🌟 Production-Ready Layout Adjustments
+- **Generous Dialog Formats:** All dialogs (`AddDeviceDialog`, `EditDeviceDialog`, `ConfirmationDialog`, `PermissionRationaleDialog`) feature generous 32dp corner rounding, prominent typography titles, and spacious primary button padding.
+- **Uncluttered Top App Bars:** Perfectly colored solid backgrounds matching the active theme mode across `AppearanceScreen`, `DeveloperScreen`, `TermsScreen`, and `PrivacyScreen`.
+- **Streamlined Navigation & Spacing:** Enforces robust bottom padding (`110.dp`) above the floating navigation dock across all console tabs to guarantee full unhindered scrolling.
 
 ---
 

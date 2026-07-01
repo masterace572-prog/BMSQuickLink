@@ -19,13 +19,13 @@ fun PermissionRationaleDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        shape = RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(32.dp),
         containerColor = MaterialTheme.colorScheme.surface,
         icon = {
             Icon(imageVector = Icons.Default.Info, contentDescription = "Permission Info", tint = MaterialTheme.colorScheme.primary)
         },
         title = {
-            Text(text = "Permissions Required for Finding", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "Permissions Required", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface)
         },
         text = {
             Text(
@@ -35,6 +35,7 @@ fun PermissionRationaleDialog(
                     "BMS Quick Link & Control requires both Bluetooth and Location permissions for successfully finding, scanning, and establishing a stable connection with your battery management system."
                 },
                 style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp)
             )
         },
@@ -42,28 +43,28 @@ fun PermissionRationaleDialog(
             if (isPermanentDenial) {
                 Button(
                     onClick = onOpenSettings,
-                    shape = MaterialTheme.shapes.medium,
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                    shape = MaterialTheme.shapes.large,
+                    contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
                 ) {
-                    Text(text = "Open Settings", style = MaterialTheme.typography.labelLarge)
+                    Text(text = "Open Settings", style = MaterialTheme.typography.titleMedium)
                 }
             } else {
                 Button(
                     onClick = onRetry,
-                    shape = MaterialTheme.shapes.medium,
-                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                    shape = MaterialTheme.shapes.large,
+                    contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
                 ) {
-                    Text(text = "Retry", style = MaterialTheme.typography.labelLarge)
+                    Text(text = "Retry", style = MaterialTheme.typography.titleMedium)
                 }
             }
         },
         dismissButton = {
             OutlinedButton(
                 onClick = onDismiss,
-                shape = MaterialTheme.shapes.medium,
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
+                shape = MaterialTheme.shapes.large,
+                contentPadding = PaddingValues(horizontal = 28.dp, vertical = 14.dp)
             ) {
-                Text(text = "Cancel", style = MaterialTheme.typography.labelLarge)
+                Text(text = "Cancel", style = MaterialTheme.typography.titleMedium)
             }
         }
     )

@@ -2,6 +2,7 @@ package com.bms.quicklink.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -278,7 +279,7 @@ private fun AddDeviceDialog(
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(32.dp),
         containerColor = MaterialTheme.colorScheme.surface,
-        title = { Text(text = "Add Saved BMS", style = MaterialTheme.typography.headlineMedium) },
+        title = { Text(text = "Add Saved BMS", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp), modifier = Modifier.padding(top = 16.dp)) {
                 OutlinedTextField(
@@ -336,7 +337,7 @@ private fun EditDeviceDialog(
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(32.dp),
         containerColor = MaterialTheme.colorScheme.surface,
-        title = { Text(text = "Edit Profile Nickname", style = MaterialTheme.typography.headlineMedium) },
+        title = { Text(text = "Edit Profile Nickname", style = MaterialTheme.typography.headlineMedium, color = MaterialTheme.colorScheme.onSurface) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(20.dp), modifier = Modifier.padding(top = 16.dp)) {
                 Text(text = "BMS MAC: $address", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)

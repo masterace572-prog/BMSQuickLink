@@ -67,7 +67,7 @@ fun SettingsTab(
             // Appearance Nav Card
             PreferenceNavCard(
                 title = "Appearance",
-                subtitle = "Customize active themes, accent palette, and card styles",
+                subtitle = "Customize active themes, solid accent palette, and card styles",
                 icon = Icons.Default.Palette,
                 cardBg = cardBg,
                 cardBorder = cardBorder,

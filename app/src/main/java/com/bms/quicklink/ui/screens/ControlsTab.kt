@@ -156,9 +156,9 @@ fun ControlsTab(
             exit = fadeOut() + shrinkVertically()
         ) {
             val directBg = when (cardStyle) {
-                "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.25f)
+                "GLASS" -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
                 "OUTLINED" -> Color.Transparent
-                else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
             }
             val directBorder = if (cardStyle == "FILLED") Color.Transparent else MaterialTheme.colorScheme.outline
 

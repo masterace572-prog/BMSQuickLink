@@ -67,7 +67,7 @@ fun AppearanceScreen(
                         .padding(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    val modes = listOf("DARK" to "Obsidian", "LIGHT" to "Arctic", "SYSTEM" to "System")
+                    val modes = listOf("DARK" to "Solid Dark", "LIGHT" to "Solid Light", "SYSTEM" to "System")
                     modes.forEach { (modeKey, modeLabel) ->
                         val isSelected = themeMode == modeKey
                         val bgColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)
@@ -93,19 +93,19 @@ fun AppearanceScreen(
             // 2. Dynamic Accent Color Swatch Palette
             Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 Text(text = "Accent Palette", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
-                Text(text = "Customize the accent color for active switches, buttons, and navigation indicators.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(text = "Customize the solid accent color for active switches, buttons, and navigation indicators.", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     val swatches = listOf(
-                        "BLUE" to AccentBlueDark,
-                        "EMERALD" to AccentEmeraldDark,
-                        "ORANGE" to AccentOrangeDark,
-                        "ROSE" to AccentRoseDark,
-                        "CYAN" to AccentCyanDark,
-                        "PURPLE" to AccentPurpleDark
+                        "BLUE" to ClassicBlueDark,
+                        "EMERALD" to ClassicGreenDark,
+                        "ORANGE" to ClassicOrangeDark,
+                        "ROSE" to ClassicCrimsonDark,
+                        "CYAN" to ClassicTealDark,
+                        "PURPLE" to ClassicPurpleDark
                     )
 
                     swatches.forEach { (colorKey, colorValue) ->
@@ -145,7 +145,7 @@ fun AppearanceScreen(
                         .padding(8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    val styles = listOf("FILLED" to "Solid Clean", "OUTLINED" to "Outlined", "GLASS" to "Glassmorphism")
+                    val styles = listOf("FILLED" to "Solid Clean", "OUTLINED" to "Outlined", "GLASS" to "Translucent")
                     styles.forEach { (styleKey, styleLabel) ->
                         val isSelected = cardStyle == styleKey
                         val bgColor by animateColorAsState(targetValue = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent)

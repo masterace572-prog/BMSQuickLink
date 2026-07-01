@@ -30,64 +30,64 @@ fun BMSQuickLinkTheme(
     }
 
     val primaryAccent = when (accentColorName) {
-        "BLUE" -> if (isDark) AccentBlueDark else AccentBlueLight
-        "EMERALD" -> if (isDark) AccentEmeraldDark else AccentEmeraldLight
-        "ORANGE" -> if (isDark) AccentOrangeDark else AccentOrangeLight
-        "ROSE" -> if (isDark) AccentRoseDark else AccentRoseLight
-        "CYAN" -> if (isDark) AccentCyanDark else AccentCyanLight
-        "PURPLE" -> if (isDark) AccentPurpleDark else AccentPurpleLight
-        else -> if (isDark) AccentBlueDark else AccentBlueLight
+        "BLUE" -> if (isDark) ClassicBlueDark else ClassicBlueLight
+        "EMERALD" -> if (isDark) ClassicGreenDark else ClassicGreenLight
+        "ORANGE" -> if (isDark) ClassicOrangeDark else ClassicOrangeLight
+        "ROSE" -> if (isDark) ClassicCrimsonDark else ClassicCrimsonLight
+        "CYAN" -> if (isDark) ClassicTealDark else ClassicTealLight
+        "PURPLE" -> if (isDark) ClassicPurpleDark else ClassicPurpleLight
+        else -> if (isDark) ClassicBlueDark else ClassicBlueLight
     }
 
     val colorScheme = if (isDark) {
         darkColorScheme(
             primary = primaryAccent,
-            onPrimary = ObsidianBackground,
-            primaryContainer = primaryAccent.copy(alpha = 0.2f),
+            onPrimary = SolidBackgroundDark,
+            primaryContainer = primaryAccent.copy(alpha = 0.25f),
             onPrimaryContainer = primaryAccent,
             secondary = primaryAccent,
-            onSecondary = ObsidianBackground,
-            secondaryContainer = primaryAccent.copy(alpha = 0.2f),
+            onSecondary = SolidBackgroundDark,
+            secondaryContainer = primaryAccent.copy(alpha = 0.25f),
             onSecondaryContainer = primaryAccent,
             tertiary = primaryAccent,
-            onTertiary = ObsidianBackground,
-            tertiaryContainer = primaryAccent.copy(alpha = 0.2f),
+            onTertiary = SolidBackgroundDark,
+            tertiaryContainer = primaryAccent.copy(alpha = 0.25f),
             onTertiaryContainer = primaryAccent,
-            surface = ObsidianSurface,
+            surface = SolidSurfaceDark,
             onSurface = TextPrimaryDark,
-            surfaceVariant = ObsidianSurfaceVariant,
+            surfaceVariant = SolidSurfaceVariantDark,
             onSurfaceVariant = TextSecondaryDark,
-            background = ObsidianBackground,
+            background = SolidBackgroundDark,
             onBackground = TextPrimaryDark,
-            error = AccentRoseDark,
-            errorContainer = AccentRoseDark.copy(alpha = 0.2f),
-            onErrorContainer = AccentRoseDark,
-            outline = ObsidianBorder
+            error = ClassicCrimsonDark,
+            errorContainer = ClassicCrimsonDark.copy(alpha = 0.25f),
+            onErrorContainer = ClassicCrimsonDark,
+            outline = SolidBorderDark
         )
     } else {
         lightColorScheme(
             primary = primaryAccent,
-            onPrimary = ArcticSurface,
-            primaryContainer = primaryAccent.copy(alpha = 0.15f),
+            onPrimary = SolidSurfaceLight,
+            primaryContainer = primaryAccent.copy(alpha = 0.18f),
             onPrimaryContainer = primaryAccent,
             secondary = primaryAccent,
-            onSecondary = ArcticSurface,
-            secondaryContainer = primaryAccent.copy(alpha = 0.15f),
+            onSecondary = SolidSurfaceLight,
+            secondaryContainer = primaryAccent.copy(alpha = 0.18f),
             onSecondaryContainer = primaryAccent,
             tertiary = primaryAccent,
-            onTertiary = ArcticSurface,
-            tertiaryContainer = primaryAccent.copy(alpha = 0.15f),
+            onTertiary = SolidSurfaceLight,
+            tertiaryContainer = primaryAccent.copy(alpha = 0.18f),
             onTertiaryContainer = primaryAccent,
-            surface = ArcticSurface,
+            surface = SolidSurfaceLight,
             onSurface = TextPrimaryLight,
-            surfaceVariant = ArcticSurfaceVariant,
+            surfaceVariant = SolidSurfaceVariantLight,
             onSurfaceVariant = TextSecondaryLight,
-            background = ArcticBackground,
+            background = SolidBackgroundLight,
             onBackground = TextPrimaryLight,
-            error = AccentRoseLight,
-            errorContainer = AccentRoseLight.copy(alpha = 0.15f),
-            onErrorContainer = AccentRoseLight,
-            outline = ArcticBorder
+            error = ClassicCrimsonLight,
+            errorContainer = ClassicCrimsonLight.copy(alpha = 0.18f),
+            onErrorContainer = ClassicCrimsonLight,
+            outline = SolidBorderLight
         )
     }
 
